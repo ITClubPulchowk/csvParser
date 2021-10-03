@@ -37,8 +37,11 @@ if (Get-Command "cl.exe" -ErrorAction SilentlyContinue) {
 
     clang -Wno-switch -Wno-pointer-sign -Wno-enum-conversion -D_CRT_SECURE_NO_WARNINGS $SourceFiles $CompilerFlags.Split(" ") -o "$OutputBinary"
     Write-Output "Build Finished."
-} elseif (Get-Command "gcc" -ErrorAction SilentlyContinue) {
-    Write-Output "Bruh, download CLANG or Visual Studio. Aborted."
+} elseif (Get-Command "gcc.exe" -ErrorAction SilentlyContinue) {
+    Write-Output "Found GCC :pepeChrist:"
+    $compilerFlags="-g"
+    gcc $SourceFiles $CompilerFlags.Split(" ") -o "$OutputBinary"
+    
 } else {
     Write-Error "Compiler not found."
 }
