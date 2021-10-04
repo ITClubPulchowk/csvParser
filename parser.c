@@ -1,5 +1,9 @@
 #include "parser.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 char *file_buf = NULL;
 int field_offset_array[500]; // stores references to starting poistions of all the records/tokens within the file buffer
                              // maybe calculate this beforehand, or reallocate later, size should be equal to number of records
