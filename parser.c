@@ -158,15 +158,14 @@ void parse_file(const char *path){
                 break;
 
             // TODO: buggy code so commented out, to implement for \r\n, test on windows
-            //case '\r':
-            //    if (file_buf[i+1] == '\n') {
-            //        file_buf[i] = '\0';
-            //        file_buf[i+1] = '\0';
-            //        field_offset_array[field_offset_value] = i+1;
-            //        field_offset_value += 2;
-            //        csv_props.line_count++;
-            //    }
-            //    break;
+            case '\r':
+                if (file_buf[i+1] == '\n') {
+                    i++;
+                    file_buf[i] = '\0';
+                    field_offset_array[field_offset_value++] = i;
+                    csv_props.line_count++;
+                }
+                break;
 
             case ',':
                 file_buf[i] = '\0';
