@@ -1,10 +1,7 @@
 #include "parser.h"
 
-#define print_newline printf("\n") // can be removed later
-#define NUMBER_OF_RECORDS 100 // temporary test, later calculate by counting commas and newlines
-
 char *file_buf = NULL;
-int field_offset_array[100]; // maybe calculate this beforehand, or reallocate later
+int field_offset_array[500]; // maybe calculate this beforehand, or reallocate later, size should be equal to number of records
 
 struct csv_properties {
     int col_count;
@@ -32,6 +29,8 @@ int get_column_index_from_header_name(const char *header_name){
     return column;
 }
 
+// PRINT FUNCTIONS
+
 void print_record(int row, int column){
     if (file_buf == NULL){
         fprintf(stderr, "Please parse the csv before accessing the elements!");
@@ -48,8 +47,7 @@ void print_row(int row){
     }
     int row_offset = row * csv_props.col_count;
     for (int i = 0; i < csv_props.col_count; i++){
-        printf("%s", file_buf + field_offset_array[row_offset + i]);
-        print_newline;
+        printf("%s\n", file_buf + field_offset_array[row_offset + i]);
     }
 }
 
@@ -59,15 +57,17 @@ void print_column(int column){
         exit(1);
     }
     for (int i = 0; i < csv_props.line_count; i++){
-        printf("%s", file_buf + field_offset_array[i * csv_props.col_count + column]);
-        print_newline;
+        printf("%s\n", file_buf + field_offset_array[i * csv_props.col_count + column]);
     }
 }
 
 void print_csv(){
-    for (int i = 0; i < csv_props.total_records; i++){
-        printf("%d : %s", i+1, file_buf + field_offset_array[i]);
-        print_newline;
+    for (int i = 0, col_itr = 1; i < csv_props.total_records; i++, col_itr++){
+        if (col_itr == csv_props.col_count){
+            printf("\n");
+            col_itr = 0;
+        }
+        printf("%s\t", file_buf + field_offset_array[i]);
     }
 }
 
@@ -106,13 +106,13 @@ void parse_file(const char *path){
     csv_props.col_count = get_number_of_columns(fp);
 
     int file_len = get_file_length(fp);
-    file_buf = malloc((file_len + 1 ) * sizeof *file_buf);
+    file_buf = malloc((file_len + 1) * sizeof *file_buf);
 
     char ch;
     int itr = 0, field_offset_value = 1;
     field_offset_array[0] = 0;
 
-    while ((ch = fgetc(fp)) != EOF){
+    while ((ch = fgetc(fp)) != EOF){ // fread
         switch(ch){
 
             case '"':
@@ -147,7 +147,6 @@ void parse_file(const char *path){
                 break;
         }
     }
-
     csv_props.total_records = field_offset_value;
     fclose(fp);
 }
