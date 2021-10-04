@@ -34,10 +34,10 @@ void parse_file(const char *path);
 int get_column_index_from_header_name(const char *header_name);
 
 // printing functions
-void print_csv();
-void print_record(int row, int column);
-void print_row(int row);
-void print_column(int column);
+int print_csv();
+int print_record(int row, int column);
+int print_row(int row);
+int print_column(int column);
 
 // free buffer
 void free_csv_resources();

@@ -4,6 +4,17 @@ char *file_buf = NULL;
 int field_offset_array[500]; // stores references to starting poistions of all the records/tokens within the file buffer
                              // maybe calculate this beforehand, or reallocate later, size should be equal to number of records
 
+const char* gerror_message(int error_code){
+    switch(error_code){
+        case -1:
+            return "Function call before parsing csv";
+        case -2:
+            return "Function call before reading file";
+        default:
+            return "";
+    }
+}
+
 struct csv_properties {
     int col_count;
     int line_count;
@@ -13,7 +24,7 @@ struct csv_properties {
 int get_column_index_from_header_name(const char *header_name){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
-        exit(1);
+        return -1;
     }
     int column = -1;
     for (int i = 0; i < csv_props.col_count; i++){
@@ -23,49 +34,48 @@ int get_column_index_from_header_name(const char *header_name){
             break;
         }
     }
-    if (column == -1){
-        fprintf(stderr, "%s : Header with name %s does not exist!\n", __PROCEDURE__, header_name);
-        exit(1);
-    }
     return column;
 }
 
 // PRINT FUNCTIONS
 
-void print_record(int row, int column){
+int print_record(int row, int column){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
-        exit(1);
+        return -1;
     }
     int offset = row * csv_props.col_count + column;
     printf("%s\n", file_buf + field_offset_array[offset]);
+    return 0;
 }
 
-void print_row(int row){
+int print_row(int row){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
-        exit(1);
+        return -1;
     }
     int row_offset = row * csv_props.col_count;
     for (int i = 0; i < csv_props.col_count; i++){
         printf("%s\n", file_buf + field_offset_array[row_offset + i]);
     }
+    return 0;
 }
 
-void print_column(int column){
+int print_column(int column){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
-        exit(1);
+        return -1;
     }
     for (int i = 0; i < csv_props.line_count; i++){
         printf("%s\n", file_buf + field_offset_array[i * csv_props.col_count + column]);
     }
+    return 0;
 }
 
-void print_csv(){
+int print_csv(){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
-        exit(1);
+        return -1;
     }
     for (int i = 0, col_itr = 1; i < csv_props.total_records; i++, col_itr++){
         if (col_itr == csv_props.col_count){
@@ -74,6 +84,7 @@ void print_csv(){
         }
         printf("%s\t", file_buf + field_offset_array[i]);
     }
+    return 0;
 }
 
 static int get_file_length(FILE *fp){
@@ -87,7 +98,7 @@ static int get_file_length(FILE *fp){
 static int get_number_of_columns(){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before reading into file buffer\n", __PROCEDURE__);
-        exit(1);
+        return -2;
     }
     int count = 1; // maybe use 0 for default value?
     int i = 0;
@@ -111,20 +122,23 @@ static int get_number_of_columns(){
 }
 
 void parse_file(const char *path){
-    FILE* fp = fopen(path, "r");
+    FILE* fp = fopen(path, "rb");
 
     int file_len = get_file_length(fp);
     file_buf = malloc((file_len + 1) * sizeof *file_buf);
     fread(file_buf, 1, file_len, fp);
+
     fclose(fp);
 
     csv_props.col_count = get_number_of_columns();
     csv_props.line_count = 1;
+    field_offset_array[0] = 0; // for first entry, offset is 0
+    int field_offset_value = 1;
 
-    char ch;
-    int itr = 0, field_offset_value = 1;
-    field_offset_array[0] = 0;
-
+	/*
+      source = "hello,world,my,name,is";
+      modified_buffer = "hello\0world\0my\0name\0is";
+	*/
     for (int i = 0; i < file_len; ++i){
         switch(file_buf[i]){
 
@@ -142,6 +156,17 @@ void parse_file(const char *path){
                 field_offset_array[field_offset_value++] = i+1;
                 csv_props.line_count++;
                 break;
+
+            // TODO: buggy code so commented out, to implement for \r\n, test on windows
+            //case '\r':
+            //    if (file_buf[i+1] == '\n') {
+            //        file_buf[i] = '\0';
+            //        file_buf[i+1] = '\0';
+            //        field_offset_array[field_offset_value] = i+1;
+            //        field_offset_value += 2;
+            //        csv_props.line_count++;
+            //    }
+            //    break;
 
             case ',':
                 file_buf[i] = '\0';
