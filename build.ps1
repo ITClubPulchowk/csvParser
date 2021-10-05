@@ -4,7 +4,7 @@
  )
 
 $OutputDirectory = "bin"
-$SourceFiles = "../main.c"
+$SourceFiles = "../main.c ../parser.c"
 $OutputBinary = "main.exe"
 
 if ((Test-Path -Path $OutputDirectory) -eq $false) {
@@ -23,7 +23,7 @@ if (Get-Command "cl.exe" -ErrorAction SilentlyContinue) {
         $CompilerFlags = "-O2 -Zi"
     }
 
-    cl -nologo -D_CRT_SECURE_NO_WARNINGS $SourceFiles $CompilerFlags.Split(" ") -EHsc -Fe"$OutputBinary"
+    cl -nologo -D_CRT_SECURE_NO_WARNINGS $SourceFiles.Split(" ") $CompilerFlags.Split(" ") -EHsc -Fe"$OutputBinary"
     Write-Output "Build Finished."
 } elseif (Get-Command "clang" -ErrorAction SilentlyContinue) {
     Write-Host "Found CLANG."
@@ -35,7 +35,7 @@ if (Get-Command "cl.exe" -ErrorAction SilentlyContinue) {
         $CompilerFlags = "-O2 -gcodeview"
     }
 
-    clang -Wno-switch -Wno-pointer-sign -Wno-enum-conversion -D_CRT_SECURE_NO_WARNINGS $SourceFiles $CompilerFlags.Split(" ") -o "$OutputBinary"
+    clang -Wno-switch -Wno-pointer-sign -Wno-enum-conversion -D_CRT_SECURE_NO_WARNINGS $SourceFiles.Split(" ") $CompilerFlags.Split(" ") -o "$OutputBinary"
     Write-Output "Build Finished."
 } elseif (Get-Command "gcc.exe" -ErrorAction SilentlyContinue) {
     Write-Output "Found GCC :pepeChrist:"
