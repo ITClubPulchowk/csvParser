@@ -38,9 +38,9 @@ if (Get-Command "cl.exe" -ErrorAction SilentlyContinue) {
     clang -Wno-switch -Wno-pointer-sign -Wno-enum-conversion -D_CRT_SECURE_NO_WARNINGS $SourceFiles.Split(" ") $CompilerFlags.Split(" ") -o "$OutputBinary"
     Write-Output "Build Finished."
 } elseif (Get-Command "gcc.exe" -ErrorAction SilentlyContinue) {
-    Write-Output "Found GCC :pepeChrist:"
+    Write-Output "Found GCC"
     $compilerFlags="-g"
-    gcc $SourceFiles $CompilerFlags.Split(" ") -o "$OutputBinary"
+    gcc $SourceFiles.split(" ") $CompilerFlags.Split(" ") -o "$OutputBinary"
     
 } else {
     Write-Error "Compiler not found."

@@ -60,7 +60,7 @@ int print_row(int row){
     }
     int row_offset = row * csv_props.col_count;
     for (int i = 0; i < csv_props.col_count; i++){
-        printf("%s\n", file_buf + field_offset_array[row_offset + i]);
+        printf("%20s\n", file_buf + field_offset_array[row_offset + i]);
     }
     return 0;
 }
@@ -71,7 +71,7 @@ int print_column(int column){
         return -1;
     }
     for (int i = 0; i < csv_props.line_count; i++){
-        printf("%s\n", file_buf + field_offset_array[i * csv_props.col_count + column]);
+        printf("%20s\n", file_buf + field_offset_array[i * csv_props.col_count + column]);
     }
     return 0;
 }
@@ -86,7 +86,7 @@ int print_csv(){
             printf("\n");
             col_itr = 0;
         }
-        printf("%s\t", file_buf + field_offset_array[i]);
+        printf("%20s\t", file_buf + field_offset_array[i]);
     }
     return 0;
 }
