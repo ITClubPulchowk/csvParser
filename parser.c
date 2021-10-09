@@ -10,6 +10,8 @@ const char* gerror_message(int error_code){
             return "Function call before parsing csv";
         case -2:
             return "Function call before reading file";
+        case -3:
+            return "Function parameter is invalid";
         default:
             return "";
     }
@@ -26,7 +28,7 @@ int get_column_index_from_header_name(const char *header_name){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
     }
-    int column = -1;
+    int column = -3;
     for (int i = 0; i < csv_props.col_count; i++){
         char *header_in_file = file_buf + field_offset_array[i];
         if(!strcmp(header_in_file, header_name)){
@@ -54,6 +56,10 @@ int print_row(int row){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
     }
+    if (row < 0 || row > csv_props.line_count){
+        fprintf(stderr, "%s : Invalid row number\n", __PROCEDURE__);
+        return -3;
+    }
     int row_offset = row * csv_props.col_count;
     for (int i = 0; i < csv_props.col_count; i++){
         printf("%s\n", file_buf + field_offset_array[row_offset + i]);
@@ -65,6 +71,10 @@ int print_column(int column){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
+    }
+    if (column < 0 || column > csv_props.col_count){
+        fprintf(stderr, "%s : Invalid column number\n", __PROCEDURE__);
+        return -3;
     }
     for (int i = 0; i < csv_props.line_count; i++){
         printf("%s\n", file_buf + field_offset_array[i * csv_props.col_count + column]);
@@ -94,7 +104,6 @@ static int get_file_length(FILE *fp){
    return f_size;
 }
 
-// TODO: blank lines?
 static int get_number_of_columns(){
     if (file_buf == NULL){
         fprintf(stderr, "%s : Function call before reading into file buffer\n", __PROCEDURE__);
@@ -157,7 +166,7 @@ void parse_file(const char *path){
                 csv_props.line_count++;
                 break;
 
-            // TODO: buggy code so commented out, to implement for \r\n, test on windows
+            // TODO: implement for \r\n, test on windows
             case '\r':
                 if (file_buf[i+1] == '\n') {
                     i++;
