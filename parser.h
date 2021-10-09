@@ -5,6 +5,7 @@
 
 // run this function before everything else
 void parse_file(const char *path);
+char* parse();
 
 // access columns by header name
 int get_column_index_from_header_name(const char *header_name);

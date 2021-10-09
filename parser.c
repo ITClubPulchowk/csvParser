@@ -22,10 +22,13 @@ const char* gerror_message(int error_code){
 }
 
 struct csv_properties {
-    int col_count;
-    int line_count;
-    int total_records;
+    int col_count; // initialized to 1
+    int line_count; // initialized to 1
+    int total_records; // initialized to 0
+    int parse_pos; // initialized to -1
 }csv_props;
+
+
 
 int get_column_index_from_header_name(const char *header_name){
     if (file_buf == NULL){
@@ -81,7 +84,9 @@ int print_column(int column){
         return -3;
     }
     for (int i = 0; i < csv_props.line_count; i++){
-        printf("%20s\n", file_buf + field_offset_array[i * csv_props.col_count + column]);
+        char *temp = file_buf + field_offset_array[i * csv_props.col_count + column];
+        printf("%s\n", temp);
+        //printf("%d ", field_offset_array[i * csv_props.col_count + column]);
     }
     return 0;
 }
@@ -134,6 +139,15 @@ static int get_number_of_columns(){
     return count;
 }
 
+char* parse(){
+    if (csv_props.parse_pos > csv_props.total_records){
+        printf("%s: Parsing complete.", __PROCEDURE__);
+        return "";
+    }
+    csv_props.parse_pos++;
+    return file_buf + field_offset_array[csv_props.parse_pos];
+}
+
 void parse_file(const char *path){
     FILE* fp = fopen(path, "rb");
 
@@ -143,8 +157,11 @@ void parse_file(const char *path){
 
     fclose(fp);
 
+    // set csv properties
     csv_props.col_count = get_number_of_columns();
     csv_props.line_count = 1;
+    csv_props.parse_pos = -1;
+
     field_offset_array[0] = 0; // for first entry, offset is 0
     int field_offset_value = 1;
 
@@ -166,7 +183,7 @@ void parse_file(const char *path){
             // replace newlines and commas with \0 characters so tokens can be read at once with string operations
             case '\n':
                 file_buf[i] = '\0';
-                field_offset_array[field_offset_value++] = i+1;
+                field_offset_array[field_offset_value++] = ++i;
                 csv_props.line_count++;
                 break;
 
@@ -175,14 +192,14 @@ void parse_file(const char *path){
                 if (file_buf[i+1] == '\n') {
                     i++;
                     file_buf[i] = '\0';
-                    field_offset_array[field_offset_value++] = i;
+                    field_offset_array[field_offset_value++] = ++i;
                     csv_props.line_count++;
                 }
                 break;
 
             case ',':
                 file_buf[i] = '\0';
-                field_offset_array[field_offset_value++] = i+1;
+                field_offset_array[field_offset_value++] = ++i;
                 break;
 
             default:
