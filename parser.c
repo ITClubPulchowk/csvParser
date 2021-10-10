@@ -4,6 +4,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+csv_parser csv_defaults = {.col_count = 1,
+                           .line_count = 1,
+                           .total_records = 0,
+                           .field_offset_array = NULL,
+                           .file_buf = NULL};
+
 const char* gerror_message(int error_code){
     switch(error_code){
         case -1:
@@ -17,7 +23,7 @@ const char* gerror_message(int error_code){
     }
 }
 
-int get_column_index_from_header_name(struct csv_parser* parser, const char *header_name){
+int get_column_index_from_header_name(csv_parser* parser, const char *header_name){
     if (parser->file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
@@ -35,7 +41,7 @@ int get_column_index_from_header_name(struct csv_parser* parser, const char *hea
 
 // PRINT FUNCTIONS
 
-int print_record(struct csv_parser* parser, int row, int column){
+int print_record(csv_parser* parser, int row, int column){
     if (parser->file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
@@ -45,7 +51,7 @@ int print_record(struct csv_parser* parser, int row, int column){
     return 0;
 }
 
-int print_row(struct csv_parser* parser, int row){
+int print_row(csv_parser* parser, int row){
     if (parser->file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
@@ -61,7 +67,7 @@ int print_row(struct csv_parser* parser, int row){
     return 0;
 }
 
-int print_column(struct csv_parser* parser, int column){
+int print_column(csv_parser* parser, int column){
     if (parser->file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
@@ -78,7 +84,7 @@ int print_column(struct csv_parser* parser, int column){
     return 0;
 }
 
-int print_csv(struct csv_parser* parser){
+int print_csv(csv_parser* parser){
     if (parser->file_buf == NULL){
         fprintf(stderr, "%s : Function call before parsing the csv\n", __PROCEDURE__);
         return -1;
@@ -100,7 +106,7 @@ static int get_file_length(FILE *fp){
    return f_size;
 }
 
-static int get_number_of_columns(struct csv_parser* parser){
+static int get_number_of_columns(csv_parser* parser){
     if (parser->file_buf == NULL){
         fprintf(stderr, "%s : Function call before reading into file buffer\n", __PROCEDURE__);
         return -2;
@@ -150,7 +156,7 @@ static int get_number_of_lines(char *buffer, int len){
     return line_count;
 }
 
-void load_file_buffer(const char *file_path, struct csv_parser* parser){
+void load_file_buffer(csv_parser* parser, const char *file_path){
     FILE* fp = fopen(file_path, "rb");
 
     int file_len = get_file_length(fp);
@@ -209,7 +215,7 @@ void load_file_buffer(const char *file_path, struct csv_parser* parser){
     }
 }
 
-void free_csv_resources(struct csv_parser* parser){
+void free_csv_resources(csv_parser* parser){
     free(parser->file_buf);
     free(parser->field_offset_array);
 }

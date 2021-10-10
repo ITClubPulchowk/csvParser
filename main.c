@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-	struct csv_parser parser;
-	load_file_buffer("./samples/guild-communicators.csv", &parser);
+	csv_parser parser = csv_defaults;
+	load_file_buffer(&parser, "./samples/guild-communicators.csv");
 
 	//int column_index = get_column_index_from_header_name(&parser, "visitors");
 	//print_column(&parser, column_index);
