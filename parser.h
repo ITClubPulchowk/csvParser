@@ -8,6 +8,7 @@ struct csv_parser {
     int col_count; // initialize to 1
     int line_count; // initialize to 1
     int total_records; // initialize to 0
+    int parser_pos; // initialize to -1
     int* field_offset_array; // initialize to NULL
     char* file_buf; // initialize to NULL
 };
@@ -16,6 +17,9 @@ extern csv_parser csv_defaults;
 
 // run this function before everything else
 void load_file_buffer(csv_parser* parser, const char *file_path);
+
+// sequential parsing
+char* parse_next(csv_parser* parser);
 
 // access columns by header name
 int get_column_index_from_header_name(csv_parser* parser, const char *header_name);

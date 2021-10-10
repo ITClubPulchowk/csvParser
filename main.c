@@ -5,6 +5,10 @@ int main(int argc, char *argv[]) {
 	csv_parser parser = csv_defaults;
 	load_file_buffer(&parser, "./samples/guild-communicators.csv");
 
+	//for (int i = 0; i < 6; i++){
+	//	printf("%s\n", parse_next(&parser));
+	//}
+
 	//int column_index = get_column_index_from_header_name(&parser, "visitors");
 	//print_column(&parser, column_index);
 

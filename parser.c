@@ -7,6 +7,7 @@
 csv_parser csv_defaults = {.col_count = 1,
                            .line_count = 1,
                            .total_records = 0,
+                           .parser_pos = -1,
                            .field_offset_array = NULL,
                            .file_buf = NULL};
 
@@ -156,6 +157,19 @@ static int get_number_of_lines(char *buffer, int len){
     return line_count;
 }
 
+char* parse_next(csv_parser* parser){
+    if (parser->file_buf == NULL){
+        fprintf(stderr, "%s : Function call before reading into file buffer\n", __PROCEDURE__);
+        return "";
+    }
+    if (parser->parser_pos >= parser->total_records){
+        fprintf(stderr, "%s : Parsing complete!", __PROCEDURE__);
+        return "";
+    }
+    parser->parser_pos = parser->parser_pos + 1;
+    return parser->file_buf + parser->field_offset_array[parser->parser_pos];
+}
+
 void load_file_buffer(csv_parser* parser, const char *file_path){
     FILE* fp = fopen(file_path, "rb");
 
@@ -166,6 +180,7 @@ void load_file_buffer(csv_parser* parser, const char *file_path){
     fclose(fp);
 
     // set csv properties
+    parser->parser_pos = -1;
     parser->col_count = get_number_of_columns(parser);
     parser->line_count = get_number_of_lines(parser->file_buf, file_len);
     parser->total_records = parser->col_count * parser->line_count;
