@@ -111,6 +111,16 @@ void csv_parser_free(void *ptr, void *context) {
 	CSV_PARSER_FREE(ptr, context);
 }
 
+uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
+	uint8_t *dst = csv_parser_malloc((length + 1) * sizeof(*buffer), parser->allocator_context);
+	if (dst) {
+		memcpy(dst, buffer, length);
+		dst[length] = 0;
+		return dst;
+	}
+	return NULL;
+}
+
 void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
 	parser->buffer = buffer;
 	parser->buffer_length = length;
@@ -121,11 +131,22 @@ void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) 
 	parser->lines = csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
 }
 
+csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, size_t length) {
+	uint8_t *duplicate = csv_parser_duplicate_buffer(parser, buffer, length);
+	if (duplicate) {
+		csv_parser_load_buffer(parser, duplicate, length);
+		return 1;
+	}
+	return 0;
+}
+
 #ifndef CSV_PARSER_NO_STDIO
 csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
 	CSV_PARSER_ASSERT(fp);
 	size_t buffer_length = csv_parser_get_file_size(fp);
 	uint8_t *buffer = csv_parser_malloc((buffer_length + 1) * sizeof(*buffer), parser->allocator_context);
+	if (buffer == NULL)
+		return 0;
 	buffer[buffer_length] = 0;
 	size_t result = fread(buffer, buffer_length, 1, fp);
 

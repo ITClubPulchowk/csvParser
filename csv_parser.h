@@ -39,11 +39,18 @@ void csv_parser_init(csv_parser *parser, void *allocator_context);
 void *csv_parser_malloc(size_t size, void *context);
 void csv_parser_free(void *ptr, void *context);
 
-void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length); // buffer must be null terminated
+uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t length);
+
+// buffer must be null terminated
+// must not call csv_parser_release, buffer get modified!
+// if you don't want your buffer to get modified, call csv_parser_load_duplicated instead
+void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length);
+
+csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, size_t length); // requires call to csv_parser_release
 
 #ifndef CSV_PARSER_NO_STDIO
-csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp);
-csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path);
+csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp); // requires call to csv_parser_release
+csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path); // requires call to csv_parser_release
 void csv_parser_release(csv_parser *parser);
 #endif
 
