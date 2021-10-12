@@ -4,17 +4,10 @@
 
 Type=Project;
 Optimization=false;
-BuildDirectory=./bin
-;
-Build=main
-;
-Define=
-;
-IncludeDirectory=
-;
-Source=
-;
-LibraryDirectory=
-;
-Library=
-;
+BuildDirectory=./bin;
+Build=main;
+Define=;
+IncludeDirectory=;
+Source=*.c;
+LibraryDirectory=;
+Library=;
