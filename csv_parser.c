@@ -13,7 +13,7 @@ static size_t csv_parser_get_file_size(FILE *fp) {
 static size_t csv_parser_calculate_number_of_columns(csv_parser *parser) {
 	assert(parser->buffer);
 
-	size_t count = 1; // maybe use 0 for default value?
+	size_t count = 1;
 	size_t i = 0;
 	while (parser->buffer[i] != '\n') {
 		switch (parser->buffer[i]) {
@@ -97,19 +97,32 @@ uint8_t *csv_parser_next(csv_parser *parser) {
 	return next_token;
 }
 
-void csv_parser_load(csv_parser *parser, const char *file_path) {
-	FILE *fp = fopen(file_path, "rb");
-
-	parser->buffer_length = csv_parser_get_file_size(fp);
-	parser->buffer = malloc(parser->buffer_length * sizeof(*parser->buffer));
-	fread(parser->buffer, 1, parser->buffer_length, fp);
-
-	fclose(fp);
+void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
+	parser->buffer = buffer;
+	parser->buffer_length = length;
 
 	// set csv properties
 	parser->parser_pos = 0;
 	parser->columns = csv_parser_calculate_number_of_columns(parser);
 	parser->lines = csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
+}
+
+csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
+	FILE *fp = fopen(file_path, "rb");
+	if (fp) {
+		size_t buffer_length = csv_parser_get_file_size(fp);
+		uint8_t *buffer = malloc((buffer_length + 1) * sizeof(*buffer));
+		buffer[buffer_length] = 0;
+		size_t result = fread(buffer, buffer_length, 1, fp);
+		fclose(fp);
+
+		if (result != 1) return 0;
+
+		csv_parser_load_buffer(parser, buffer, buffer_length);
+
+		return 1;
+	}
+	return 0;
 }
 
 void csv_parser_free(csv_parser *parser) {

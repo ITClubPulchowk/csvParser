@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <stdint.h>
 
+typedef int32_t csv_parser_bool;
+
 struct csv_parser {
 	// public
 	size_t columns;
@@ -16,7 +18,8 @@ struct csv_parser {
 };
 typedef struct csv_parser csv_parser;
 
-void csv_parser_load(csv_parser *parser, const char *file_path);
+void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length); // buffer must be null terminated
+csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path);
 void csv_parser_free(csv_parser *parser);
 
 uint8_t *csv_parser_next(csv_parser *parser);
