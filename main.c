@@ -3,16 +3,16 @@
 
 int main(int argc, char *argv[]) {
 	csv_parser parser;
-	load_file_buffer(&parser, "./samples/guild-communicators.csv");
+	csv_parser_load(&parser, "./samples/guild-communicators.csv");
 
-	for (int row = 0; row < parser.line_count; ++row) {
-		for (int col = 0; col < parser.col_count; ++col) {
-			char *value = parse_next(&parser);
+	for (int row = 0; row < parser.lines; ++row) {
+		for (int col = 0; col < parser.columns; ++col) {
+			char *value = csv_parser_next(&parser);
 			printf("%s ", value);
 		}
 		printf("\n");
 	}
 
-	free_csv_resources(&parser);
+	csv_parser_free(&parser);
 	return 0;
 }
