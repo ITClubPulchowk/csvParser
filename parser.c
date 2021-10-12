@@ -4,19 +4,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-const char *gerror_message(int error_code) {
-	switch (error_code) {
-	case -1:
-		return "Function call before parsing csv";
-	case -2:
-		return "Function call before reading file";
-	case -3:
-		return "Function parameter is invalid";
-	default:
-		return "";
-	}
-}
-
 static size_t csv_parser_get_file_size(FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
 	long f_size = ftell(fp);
@@ -48,7 +35,6 @@ static size_t csv_parser_calculate_number_of_columns(csv_parser *parser) {
 	return count;
 }
 
-// TODO: get this threaded and running
 static size_t csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len) {
 	size_t lines = 1;
 	for (size_t i = 0; i < len; i++) {
