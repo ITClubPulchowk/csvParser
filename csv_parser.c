@@ -104,11 +104,11 @@ void csv_parser_init(csv_parser *parser, void *allocator_context) {
 }
 
 void *csv_parser_malloc(size_t size, void *context) {
-	return malloc(size);
+	return CSV_PARSER_MALLOC(size, context);
 }
 
 void csv_parser_free(void *ptr, void *context) {
-	free(ptr);
+	CSV_PARSER_FREE(ptr, context);
 }
 
 void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {

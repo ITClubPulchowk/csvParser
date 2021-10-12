@@ -6,9 +6,14 @@
 #define CSV_PARSER_ASSERT assert
 #endif
 
+#ifndef CSV_PARSER_MALLOC
+#include <stdlib.h>
+#define CSV_PARSER_MALLOC(size, context) malloc(size)
+#define CSV_PARSER_FREE(ptr, context) free(ptr)
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 typedef int32_t csv_parser_bool;
 
