@@ -121,6 +121,7 @@ void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) 
 	parser->lines = csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
 }
 
+#ifndef CSV_PARSER_NO_STDIO
 csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
 	CSV_PARSER_ASSERT(fp);
 	size_t buffer_length = csv_parser_get_file_size(fp);
@@ -147,3 +148,4 @@ csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
 void csv_parser_release(csv_parser *parser) {
 	csv_parser_free(parser->buffer, parser->allocator_context);
 }
+#endif
