@@ -3,6 +3,7 @@
 
 int main(int argc, char *argv[]) {
 	csv_parser parser;
+	csv_parser_init(&parser, NULL);
 	if (csv_parser_load(&parser, "./samples/guild-communicators.csv")) {
 		for (int row = 0; row < parser.lines; ++row) {
 			for (int col = 0; col < parser.columns; ++col) {
@@ -12,7 +13,7 @@ int main(int argc, char *argv[]) {
 			printf("\n");
 		}
 
-		csv_parser_free(&parser);
+		csv_parser_release(&parser);
 	}
 	return 0;
 }

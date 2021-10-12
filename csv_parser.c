@@ -94,6 +94,23 @@ uint8_t *csv_parser_next(csv_parser *parser) {
 	return next_token;
 }
 
+void csv_parser_init(csv_parser *parser, void *allocator_context) {
+	parser->buffer = NULL;
+	parser->buffer_length = 0;
+	parser->columns = 0;
+	parser->lines = 0;
+	parser->parser_pos = 0;
+	parser->allocator_context = allocator_context;
+}
+
+void *csv_parser_malloc(size_t size, void *context) {
+	return malloc(size);
+}
+
+void csv_parser_free(void *ptr, void *context) {
+	free(ptr);
+}
+
 void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
 	parser->buffer = buffer;
 	parser->buffer_length = length;
@@ -107,7 +124,7 @@ void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) 
 csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
 	assert(fp);
 	size_t buffer_length = csv_parser_get_file_size(fp);
-	uint8_t *buffer = malloc((buffer_length + 1) * sizeof(*buffer));
+	uint8_t *buffer = csv_parser_malloc((buffer_length + 1) * sizeof(*buffer), parser->allocator_context);
 	buffer[buffer_length] = 0;
 	size_t result = fread(buffer, buffer_length, 1, fp);
 
@@ -127,6 +144,6 @@ csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
 	return 0;
 }
 
-void csv_parser_free(csv_parser *parser) {
-	free(parser->buffer);
+void csv_parser_release(csv_parser *parser) {
+	csv_parser_free(parser->buffer, parser->allocator_context);
 }
