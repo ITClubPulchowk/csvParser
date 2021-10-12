@@ -1,8 +1,5 @@
 #include "csv_parser.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 static size_t csv_parser_get_file_size(FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
 	long f_size = ftell(fp);
@@ -107,20 +104,25 @@ void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) 
 	parser->lines = csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
 }
 
+csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
+	assert(fp);
+	size_t buffer_length = csv_parser_get_file_size(fp);
+	uint8_t *buffer = malloc((buffer_length + 1) * sizeof(*buffer));
+	buffer[buffer_length] = 0;
+	size_t result = fread(buffer, buffer_length, 1, fp);
+
+	if (result != 1) return 0;
+	csv_parser_load_buffer(parser, buffer, buffer_length);
+
+	return 1;
+}
+
 csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
 	FILE *fp = fopen(file_path, "rb");
 	if (fp) {
-		size_t buffer_length = csv_parser_get_file_size(fp);
-		uint8_t *buffer = malloc((buffer_length + 1) * sizeof(*buffer));
-		buffer[buffer_length] = 0;
-		size_t result = fread(buffer, buffer_length, 1, fp);
+		csv_parser_bool result = csv_parser_load_file(parser, fp);
 		fclose(fp);
-
-		if (result != 1) return 0;
-
-		csv_parser_load_buffer(parser, buffer, buffer_length);
-
-		return 1;
+		return result;
 	}
 	return 0;
 }
