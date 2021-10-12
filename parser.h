@@ -1,7 +1,6 @@
 #ifndef CSV_PARSER_H
 #define CSV_PARSER_H
 
-#include "base.h"
 #include <assert.h>
 #include <stdint.h>
 
