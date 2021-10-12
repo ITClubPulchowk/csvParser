@@ -1,4 +1,6 @@
+#define CSV_PARSER_IMPLEMENTATION
 #include "csv_parser.h"
+
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
