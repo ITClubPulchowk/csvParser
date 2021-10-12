@@ -17,18 +17,18 @@ const char *gerror_message(int error_code) {
 	}
 }
 
-static int csv_parser_get_file_size(FILE *fp) {
+static size_t csv_parser_get_file_size(FILE *fp) {
 	fseek(fp, 0L, SEEK_END);
-	int f_size = ftell(fp);
+	long f_size = ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 	return f_size;
 }
 
-static int csv_parser_calculate_number_of_columns(csv_parser *parser) {
+static size_t csv_parser_calculate_number_of_columns(csv_parser *parser) {
 	assert(parser->buffer);
 
-	int count = 1; // maybe use 0 for default value?
-	int i = 0;
+	size_t count = 1; // maybe use 0 for default value?
+	size_t i = 0;
 	while (parser->buffer[i] != '\n') {
 		switch (parser->buffer[i]) {
 		case '"': // field inside double quotes
@@ -49,9 +49,9 @@ static int csv_parser_calculate_number_of_columns(csv_parser *parser) {
 }
 
 // TODO: get this threaded and running
-static int csv_parser_calculate_number_of_lines(char *buffer, int len) {
-	int lines = 1;
-	for (int i = 0; i < len; i++) {
+static size_t csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len) {
+	size_t lines = 1;
+	for (size_t i = 0; i < len; i++) {
 		switch (buffer[i]) {
 		case '\n':
 			lines++;
@@ -71,10 +71,10 @@ static int csv_parser_calculate_number_of_lines(char *buffer, int len) {
 	return lines;
 }
 
-char *csv_parser_next(csv_parser *parser) {
-	char *next_token = parser->buffer + parser->parser_pos;
-	int parse_status = 1;
-	for (int i = parser->parser_pos; parse_status && i < parser->buffer_length; i++) {
+uint8_t *csv_parser_next(csv_parser *parser) {
+	uint8_t *next_token = parser->buffer + parser->parser_pos;
+	size_t parse_status = 1;
+	for (size_t i = parser->parser_pos; parse_status && i < parser->buffer_length; i++) {
 		switch (parser->buffer[i]) {
 		case '"':
 			while (parser->buffer[++i] != '"');
@@ -90,7 +90,6 @@ char *csv_parser_next(csv_parser *parser) {
 			parse_status = 0;
 			break;
 
-			// TODO: implement for \r\n, test on windows
 		case '\r':
 			if (i + 1 < parser->buffer_length && parser->buffer[i + 1] == '\n') {
 				i++;

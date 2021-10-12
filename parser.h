@@ -7,13 +7,13 @@
 
 struct csv_parser {
 	// public
-	int columns;
-	int lines;
+	size_t columns;
+	size_t lines;
 
 	// internal
-	int parser_pos;
-	int buffer_length;
-	char *buffer;
+	uint8_t *buffer;
+	size_t parser_pos;
+	size_t buffer_length;
 };
 typedef struct csv_parser csv_parser;
 
