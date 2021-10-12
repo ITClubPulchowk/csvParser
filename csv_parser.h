@@ -1,7 +1,11 @@
 #ifndef CSV_PARSER_H
 #define CSV_PARSER_H
 
+#ifndef CSV_PARSER_ASSERT
 #include <assert.h>
+#define CSV_PARSER_ASSERT assert
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

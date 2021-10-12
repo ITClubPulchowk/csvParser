@@ -8,7 +8,7 @@ static size_t csv_parser_get_file_size(FILE *fp) {
 }
 
 static size_t csv_parser_calculate_number_of_columns(csv_parser *parser) {
-	assert(parser->buffer);
+	CSV_PARSER_ASSERT(parser->buffer);
 
 	size_t count = 1;
 	size_t i = 0;
@@ -122,7 +122,7 @@ void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) 
 }
 
 csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
-	assert(fp);
+	CSV_PARSER_ASSERT(fp);
 	size_t buffer_length = csv_parser_get_file_size(fp);
 	uint8_t *buffer = csv_parser_malloc((buffer_length + 1) * sizeof(*buffer), parser->allocator_context);
 	buffer[buffer_length] = 0;
