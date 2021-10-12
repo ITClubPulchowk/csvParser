@@ -1,7 +1,6 @@
-#include "parser.h"
+#include "csv_parser.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 
 static size_t csv_parser_get_file_size(FILE *fp) {
