@@ -53,7 +53,7 @@ static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len)
 	return lines;
 }
 
-void csv_parser_init(csv_parser *parser, void *allocator_context) {
+CSV_PARSER_DEFN_API void csv_parser_init(csv_parser *parser, void *allocator_context) {
 	parser->buffer = NULL;
 	parser->buffer_length = 0;
 	parser->columns = 0;
@@ -62,15 +62,15 @@ void csv_parser_init(csv_parser *parser, void *allocator_context) {
 	parser->allocator_context = allocator_context;
 }
 
-void *csv_parser_malloc(size_t size, void *context) {
+CSV_PARSER_DEFN_API void *csv_parser_malloc(size_t size, void *context) {
 	return CSV_PARSER_MALLOC(size, context);
 }
 
-void csv_parser_free(void *ptr, void *context) {
+CSV_PARSER_DEFN_API void csv_parser_free(void *ptr, void *context) {
 	CSV_PARSER_FREE(ptr, context);
 }
 
-uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
+CSV_PARSER_DEFN_API uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
 	uint8_t *dst = csv_parser_malloc((length + 1) * sizeof(*buffer), parser->allocator_context);
 	if (dst) {
 		memcpy(dst, buffer, length);
@@ -80,7 +80,7 @@ uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t
 	return NULL;
 }
 
-void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
+CSV_PARSER_DEFN_API void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
 	parser->buffer = buffer;
 	parser->buffer_length = length;
 
@@ -90,7 +90,7 @@ void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) 
 	parser->lines = _csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
 }
 
-csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, size_t length) {
+CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, size_t length) {
 	uint8_t *duplicate = csv_parser_duplicate_buffer(parser, buffer, length);
 	if (duplicate) {
 		csv_parser_load_buffer(parser, duplicate, length);
@@ -100,7 +100,7 @@ csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, 
 }
 
 #ifndef CSV_PARSER_NO_STDIO
-csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
+CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
 	CSV_PARSER_ASSERT(fp);
 	size_t buffer_length = _csv_parser_get_file_size(fp);
 	uint8_t *buffer = csv_parser_malloc((buffer_length + 1) * sizeof(*buffer), parser->allocator_context);
@@ -115,7 +115,7 @@ csv_parser_bool csv_parser_load_file(csv_parser *parser, FILE *fp) {
 	return 1;
 }
 
-csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
+CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
 	FILE *fp = fopen(file_path, "rb");
 	if (fp) {
 		csv_parser_bool result = csv_parser_load_file(parser, fp);
@@ -125,13 +125,13 @@ csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
 	return 0;
 }
 
-void csv_parser_release(csv_parser *parser) {
+CSV_PARSER_DEFN_API void csv_parser_release(csv_parser *parser) {
 	csv_parser_free(parser->buffer, parser->allocator_context);
 }
 
 #endif
 
-uint8_t *csv_parser_next(csv_parser *parser) {
+CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser) {
 	uint8_t *next_token = parser->buffer + parser->parser_pos;
 	size_t parse_status = 1;
 	for (size_t i = parser->parser_pos; parse_status && i < parser->buffer_length; i++) {
