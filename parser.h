@@ -2,6 +2,8 @@
 #define CSV_PARSER_H
 
 #include "base.h"
+#include <assert.h>
+#include <stdint.h>
 
 struct csv_parser {
 	// public
@@ -10,8 +12,8 @@ struct csv_parser {
 
 	// internal
 	int parser_pos;
-	int file_len;
-	char *file_buf;
+	int buffer_length;
+	char *buffer;
 };
 typedef struct csv_parser csv_parser;
 
