@@ -176,12 +176,21 @@ static csv_parser_bool _csv_parser_count_lines_and_columns(csv_parser *parser) {
 		parser->error.line = 1;
 		return 0;
 	}
+	else if (columns == 0) {
+		parser->error.line = 1;
+		parser->error.reason = "Bad CSV file";
+	}
 
 	uint8_t *end = parser->buffer + parser->buffer_length;
 
+	while (parser->position < end && _CSV_PARSER_ISSPACE(*parser->position)) {
+		*parser->position = '\0';
+		parser->position += 1;
+	}
+
 	int64_t next_columns;
 	while ((next_columns = _csv_parser_count_columns(parser))) {
-		if (next_columns == -1 || (columns != next_columns && columns != 0)) {
+		if (next_columns == -1 || columns != next_columns) {
 			parser->error.line = parser->lines + 1;
 			if (columns != next_columns) {
 				parser->error.reason = "Not enough number of values.";
@@ -189,12 +198,15 @@ static csv_parser_bool _csv_parser_count_lines_and_columns(csv_parser *parser) {
 			return 0;
 		}
 
-		parser->lines += (columns != 0);
+		parser->lines += 1;
 
-		while (parser->position < end && _CSV_PARSER_ISSPACE(*parser->position))
+		while (parser->position < end && _CSV_PARSER_ISSPACE(*parser->position)) {
+			*parser->position = '\0';
 			parser->position += 1;
+		}
 	}
 
+	parser->lines += 1;
 	parser->columns = columns;
 	parser->position = parser->buffer;
 	return 1;
