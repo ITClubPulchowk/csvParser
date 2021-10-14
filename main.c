@@ -77,20 +77,20 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 		return value[0] == '0' || value[0] == '1';
 
 	case 4:
-		if ((value[0] = 't' || value[0] == 'T') &&
-			(value[0] = 'r' || value[0] == 'R') &&
-			(value[0] = 'u' || value[0] == 'U') &&
-			(value[0] = 'e' || value[0] == 'E')) {
+		if ((value[0] == 't' || value[0] == 'T') &&
+			(value[1] == 'r' || value[1] == 'R') &&
+			(value[2] == 'u' || value[2] == 'U') &&
+			(value[3] == 'e' || value[3] == 'E')) {
 			*out = 1;
 			return 1;
 		}
 
 	case 5:
-		if ((value[0] = 'f' || value[0] == 'F') &&
-			(value[0] = 'a' || value[0] == 'A') &&
-			(value[0] = 'l' || value[0] == 'L') &&
-			(value[0] = 's' || value[0] == 'S') &&
-			(value[0] = 'e' || value[0] == 'E')) {
+		if ((value[0] == 'f' || value[0] == 'F') &&
+			(value[1] == 'a' || value[1] == 'A') &&
+			(value[2] == 'l' || value[2] == 'L') &&
+			(value[3] == 's' || value[3] == 'S') &&
+			(value[4] == 'e' || value[4] == 'E')) {
 			*out = 0;
 			return 1;
 		}
