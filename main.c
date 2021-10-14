@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+typedef csv_parser_bool(*csv_parse_proc)(char *value, size_t len, void *out);
+
 typedef struct csv_parser_string {
 	uint8_t *data;
 	size_t len;
@@ -97,15 +99,30 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 	return 0;
 }
 
+//
+// Custom struct
+//
+
+typedef struct dob {
+	int year, month, day;
+} dob;
+
+//
+// Custom parser
+//
+
+csv_parser_bool my_dob_parser(char *value, size_t len, dob *out) {
+	int n = sscanf(value, "%d/%d/%d", &out->month, &out->day, &out->year);
+	return n == 3;
+}
+
 int main(int argc, char *argv[]) {
+	// test
+	csv_parse_proc user_parse_proc = (csv_parse_proc)my_dob_parser;
+
 	csv_parser parser;
 	csv_parser_init(&parser, NULL);
-	if (csv_parser_load(&parser, "./samples/MOCK_DATA.csv")) {
-
-		int number_of_lines_to_parse = (int)parser.lines;
-		if (number_of_lines_to_parse > 100)
-			number_of_lines_to_parse = 100;
-
+	if (csv_parser_load(&parser, "./samples/MOCK_DATA1.csv")) {
 		for (int col = 0; col < parser.columns; ++col) {
 			size_t length = 0;
 			char *value = csv_parser_next(&parser, &length);
@@ -113,7 +130,7 @@ int main(int argc, char *argv[]) {
 		}
 		printf("\n");
 		
-		for (int row = 1; row < number_of_lines_to_parse; ++row) {
+		for (int row = 1; row < parser.lines; ++row) {
 			for (int col = 0; col < parser.columns; ++col) {
 				size_t length = 0;
 				char *value = csv_parser_next(&parser, &length);
@@ -123,10 +140,16 @@ int main(int argc, char *argv[]) {
 					case 0: {
 						char *out;
 						assert(csv_parse_string(value, length, &out));
-						printf("%-12s ", out);
+						printf("%-15s ", out);
 					} break;
 
-					case 1:
+					case 1: {
+						dob d;
+						assert(user_parse_proc(value, length, &d));
+						printf("%d-%d-%d", d.day, d.month, d.year);
+					} break;
+
+#if 0
 					case 2:
 					case 3:
 					case 4: {
@@ -140,6 +163,7 @@ int main(int argc, char *argv[]) {
 						assert(csv_parse_real(value, length, &out));
 						printf("%-12.3f ", out);
 					} break;
+#endif
 				}
 			}
 			printf("\n");

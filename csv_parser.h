@@ -127,7 +127,7 @@ static size_t _csv_parser_calculate_number_of_columns(csv_parser *parser) {
 }
 
 static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len) {
-	size_t lines = 1;
+	size_t lines = 0;
 	for (size_t i = 0; i < len; i++) {
 		switch (buffer[i]) {
 		case '\n':
@@ -145,7 +145,9 @@ static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len)
 			break;
 		}
 	}
-	return lines;
+	// If the file doesn't end with a newline, we need to add once,
+	// since that line won't be counted
+	return lines + (buffer[len - 1] != '\n' || buffer[len - 1] != '\n');
 }
 
 CSV_PARSER_DEFN_API void csv_parser_init(csv_parser *parser, void *allocator_context) {
