@@ -18,11 +18,11 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 
 
 
-csv_parser_bool csv_deserialize_cstr(char *str, size_t len, void *value);
-csv_parser_bool csv_deserialize_boolean(char* str, size_t len, void* value);
-csv_parser_bool csv_deserialize_real(char* str, size_t len, void* value);
+csv_parser_bool csv_deserialize_cstr(void* context, char *str, size_t len, void *value);
+csv_parser_bool csv_deserialize_boolean(void* context, char* str, size_t len, void* value);
+csv_parser_bool csv_deserialize_real(void* context, char* str, size_t len, void* value);
 
-typedef csv_parser_bool (*deserializer)(char *, size_t length, void *value);
+typedef csv_parser_bool (*deserializer)(void* context, char *, size_t length, void *value);
 typedef csv_parser_bool bool;
 
 typedef struct CSV_DESERIALIZE_DESC
@@ -129,7 +129,7 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 }
 
 
-csv_parser_bool csv_deserialize_cstr(char* str, size_t len,void* value)
+csv_parser_bool csv_deserialize_cstr(void* context,char* str, size_t len,void* value)
 {
   char* ptr = strdup(str);
   if(!ptr)
@@ -140,12 +140,12 @@ csv_parser_bool csv_deserialize_cstr(char* str, size_t len,void* value)
   return 1; 
 }
 
-csv_parser_bool csv_deserialize_boolean(char* str, size_t len, void* value)
+csv_parser_bool csv_deserialize_boolean(void* context, char* str, size_t len, void* value)
 {
   return csv_parse_boolean(str,len,value);
 }
 
-csv_parser_bool csv_deserialize_real(char* str, size_t len, void* value)
+csv_parser_bool csv_deserialize_real(void* context, char* str, size_t len, void* value)
 {
   return csv_parse_real(str,len,value);
 }
@@ -180,7 +180,7 @@ int32_t csv_deserialize(void* context, void *ptr_to_struct, CSV_DESERIALIZE_DESC
     for (int col = 0; col < parser->columns; ++col)
     {
       char* value = csv_parser_next(parser,&length);
-      desc->deserializer[col](value,length,(char*)ptr_to_struct + desc->offset[col]);
+      desc->deserializer[col](context,value,length,(char*)ptr_to_struct + desc->offset[col]);
     }
     ptr_to_struct = (char*)ptr_to_struct + stride;
   }
