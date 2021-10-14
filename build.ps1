@@ -4,7 +4,7 @@
  )
 
 $OutputDirectory = "bin"
-$SourceFiles = "../main.c ../parser.c"
+$SourceFiles = "../main.c"
 $OutputBinary = "main.exe"
 
 if ((Test-Path -Path $OutputDirectory) -eq $false) {
@@ -23,7 +23,7 @@ if (Get-Command "cl.exe" -ErrorAction SilentlyContinue) {
         $CompilerFlags = "-O2 -Zi"
     }
 
-    cl -nologo -D_CRT_SECURE_NO_WARNINGS $SourceFiles.Split(" ") $CompilerFlags.Split(" ") -EHsc -Fe"$OutputBinary"
+    cl -nologo -D_CRT_SECURE_NO_WARNINGS $SourceFiles.Split(" ") $CompilerFlags.Split(" ") -EHsc -Fe:"$OutputBinary"
     Write-Output "Build Finished."
 } elseif (Get-Command "clang" -ErrorAction SilentlyContinue) {
     Write-Host "Found CLANG."
