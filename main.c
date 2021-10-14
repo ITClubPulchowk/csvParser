@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
 
 	csv_parser parser;
 	csv_parser_init(&parser, NULL);
-	if (csv_parser_load(&parser, "./samples/MOCK_DATA1.csv")) {
+	if (csv_parser_load(&parser, "./samples/MOCK_DATA.csv")) {
 		for (int col = 0; col < parser.columns; ++col) {
 			size_t length = 0;
 			char *value = csv_parser_next(&parser, &length);
@@ -140,16 +140,18 @@ int main(int argc, char *argv[]) {
 					case 0: {
 						char *out;
 						assert(csv_parse_string(value, length, &out));
-						printf("%-15s ", out);
+						printf("%-12s ", out);
 					} break;
 
+#if 0
 					case 1: {
 						dob d;
 						assert(user_parse_proc(value, length, &d));
 						printf("%d-%d-%d", d.day, d.month, d.year);
 					} break;
 
-#if 0
+#else
+					case 1:
 					case 2:
 					case 3:
 					case 4: {

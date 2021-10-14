@@ -76,7 +76,7 @@ CSV_PARSER_API uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t 
 // buffer must be null terminated and the length must not count the null terminator
 // must not call csv_parser_release, buffer get modified!
 // if you don't want your buffer to get modified, call csv_parser_load_duplicated instead
-CSV_PARSER_API void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length);
+CSV_PARSER_API csv_parser_bool csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length);
 
 CSV_PARSER_API csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, size_t length); // requires call to csv_parser_release
 
@@ -104,56 +104,65 @@ static size_t _csv_parser_get_file_size(FILE *fp) {
 
 #define _CSV_PARSER_ISSPACE(ch) ((ch) == ' ' || (ch) == '\f' || (ch) == '\n' || (ch) == '\r' || (ch) == '\t' || (ch) == '\v')
 
-static size_t _csv_parser_calculate_number_of_columns(csv_parser *parser) {
-	CSV_PARSER_ASSERT(parser->buffer);
+static int64_t _csv_parser_count_columns(csv_parser *parser) {
+	int64_t count = 0;
+	size_t i = parser->position;
 
-	size_t count = 1;
-	size_t i = 0;
-	while (parser->buffer[i] != '\n') {
+	while (i < parser->buffer_length && parser->buffer[parser->buffer_length] != '\n') {
 		switch (parser->buffer[i]) {
 		case '"': // field inside double quotes
-			while (parser->buffer[++i] != '"');
+			while (parser->buffer[i] != '"') {
+				if (parser->buffer[i] == '\n' || parser->buffer[i] == '\r')
+					return -1;
+				i += 1;
+			}
 			break;
 		case '\'': // field inside single quotes
-			while (parser->buffer[++i] != '\'');
+			while (parser->buffer[i] != '\'') {
+				if (parser->buffer[i] == '\n' || parser->buffer[i] == '\r')
+					return -1;
+				i += 1;
+			}
 			break;
 		case ',':
+			parser->buffer[i] = '\0';
 			count++;
 			break;
 		default:
 			break;
 		}
+
 		i++;
 	}
+
+	// If we have found some number of elements and '\n' at the end, 
+	// the total number of columns needs to be increased by 1
+	count += (count != 0);
+
+	parser->position = i + 1;
+
 	return count;
 }
 
-static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len) {
-	size_t lines = 0;
-	for (size_t i = 0; i < len; i++) {
-		switch (buffer[i]) {
-		case '\n':
-			lines++;
-			while (_CSV_PARSER_ISSPACE(buffer[i + 1]))
-				++i;
-			break;
+static csv_parser_bool _csv_parser_count_lines_and_columns(csv_parser *parser) {
+	CSV_PARSER_ASSERT(parser->buffer);
+	int64_t columns = _csv_parser_count_columns(parser);
+	if (columns == -1) return 0;
 
-		case '\r':
-			if (i + 1 < len && buffer[i + 1] == '\n') {
-				lines++;
-				i++;
-			}
-			while (_CSV_PARSER_ISSPACE(buffer[i + 1]))
-				++i;
-			break;
+	int64_t next_columns;
+	while ((next_columns = _csv_parser_count_columns(parser))) {
+		if (next_columns == -1 || (columns != next_columns && columns != 0))
+			return 0;
 
-		default:
-			break;
-		}
+		while (_CSV_PARSER_ISSPACE(parser->buffer[parser->position]))
+			parser->position += 1;
+
+		parser->lines += (columns != 0);
 	}
-	// If the file doesn't end with a newline, we need to add once,
-	// since that line won't be counted
-	return lines + (buffer[len - 1] != '\n' && buffer[len - 1] != '\r');
+
+	parser->columns = columns;
+	parser->position = 0;
+	return 1;
 }
 
 CSV_PARSER_DEFN_API void csv_parser_init(csv_parser *parser, void *allocator_context) {
@@ -183,21 +192,20 @@ CSV_PARSER_DEFN_API uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uin
 	return NULL;
 }
 
-CSV_PARSER_DEFN_API void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
+CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
 	parser->buffer = buffer;
 	parser->buffer_length = length;
-
-	// set csv properties
 	parser->position = 0;
-	parser->columns = _csv_parser_calculate_number_of_columns(parser);
-	parser->lines = _csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
+	parser->columns = 0;
+	parser->lines = 0;
+
+	return _csv_parser_count_lines_and_columns(parser);
 }
 
 CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load_duplicated(csv_parser *parser, uint8_t *buffer, size_t length) {
 	uint8_t *duplicate = csv_parser_duplicate_buffer(parser, buffer, length);
 	if (duplicate) {
-		csv_parser_load_buffer(parser, duplicate, length);
-		return 1;
+		return csv_parser_load_buffer(parser, duplicate, length);
 	}
 	return 0;
 }
@@ -213,9 +221,7 @@ CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load_file(csv_parser *parser, FIL
 	size_t result = fread(buffer, buffer_length, 1, fp);
 
 	if (result != 1) return 0;
-	csv_parser_load_buffer(parser, buffer, buffer_length);
-
-	return 1;
+	return csv_parser_load_buffer(parser, buffer, buffer_length);
 }
 
 CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load(csv_parser *parser, const char *file_path) {
@@ -235,42 +241,14 @@ CSV_PARSER_DEFN_API void csv_parser_release(csv_parser *parser) {
 #endif
 
 CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser, size_t *length) {
+	while (!parser->buffer[parser->position]) {
+		parser->position += 1;
+	}
+
 	uint8_t *next_token = parser->buffer + parser->position;
-	size_t parse_status = 1;
-	for (size_t i = parser->position; parse_status && i < parser->buffer_length; i++) {
-		switch (parser->buffer[i]) {
-		case '"':
-			while (parser->buffer[++i] != '"');
-			break;
 
-		case '\'':
-			while (parser->buffer[++i] != '\'');
-			break;
-
-		case '\n':
-			parser->buffer[i] = '\0';
-			parser->position = ++i;
-			parse_status = 0;
-			break;
-
-		case '\r':
-			if (i + 1 < parser->buffer_length && parser->buffer[i + 1] == '\n') {
-				i++;
-				parser->buffer[i] = '\0';
-				parser->position = ++i;
-				parse_status = 0;
-			}
-			break;
-
-		case ',':
-			parser->buffer[i] = '\0';
-			parser->position = ++i;
-			parse_status = 0;
-			break;
-
-		default:
-			break;
-		}
+	while (parser->buffer[parser->position]) {
+		parser->position += 1;
 	}
 
 	*length = (parser->buffer + parser->position - 1) - next_token;
