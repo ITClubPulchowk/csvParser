@@ -34,6 +34,11 @@
 #endif
 #endif
 
+#ifndef CSV_PARSER_MEMCPY
+#include <string.h>
+#define CSV_PARSER_MEMCPY memcpy
+#endif
+
 #ifndef CSV_PARSER_NO_STDIO
 #include <stdio.h>
 #endif
@@ -54,7 +59,7 @@ struct csv_parser {
 
 	// internal
 	uint8_t *buffer;
-	size_t parser_pos;
+	size_t position;
 	size_t buffer_length;
 
 	void *allocator_context;
@@ -81,7 +86,7 @@ CSV_PARSER_API csv_parser_bool csv_parser_load(csv_parser *parser, const char *f
 CSV_PARSER_API void csv_parser_release(csv_parser *parser);
 #endif
 
-CSV_PARSER_API uint8_t *csv_parser_next(csv_parser *parser);
+CSV_PARSER_API uint8_t *csv_parser_next(csv_parser *parser, size_t *length);
 
 
 //
@@ -148,7 +153,7 @@ CSV_PARSER_DEFN_API void csv_parser_init(csv_parser *parser, void *allocator_con
 	parser->buffer_length = 0;
 	parser->columns = 0;
 	parser->lines = 0;
-	parser->parser_pos = 0;
+	parser->position = 0;
 	parser->allocator_context = allocator_context;
 }
 
@@ -163,7 +168,7 @@ CSV_PARSER_DEFN_API void csv_parser_free(void *ptr, void *context) {
 CSV_PARSER_DEFN_API uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t length) {
 	uint8_t *dst = csv_parser_malloc((length + 1) * sizeof(*buffer), parser->allocator_context);
 	if (dst) {
-		memcpy(dst, buffer, length);
+		CSV_PARSER_MEMCPY(dst, buffer, length);
 		dst[length] = 0;
 		return dst;
 	}
@@ -175,7 +180,7 @@ CSV_PARSER_DEFN_API void csv_parser_load_buffer(csv_parser *parser, uint8_t *buf
 	parser->buffer_length = length;
 
 	// set csv properties
-	parser->parser_pos = 0;
+	parser->position = 0;
 	parser->columns = _csv_parser_calculate_number_of_columns(parser);
 	parser->lines = _csv_parser_calculate_number_of_lines(parser->buffer, parser->buffer_length);
 }
@@ -221,10 +226,10 @@ CSV_PARSER_DEFN_API void csv_parser_release(csv_parser *parser) {
 
 #endif
 
-CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser) {
-	uint8_t *next_token = parser->buffer + parser->parser_pos;
+CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser, size_t *length) {
+	uint8_t *next_token = parser->buffer + parser->position;
 	size_t parse_status = 1;
-	for (size_t i = parser->parser_pos; parse_status && i < parser->buffer_length; i++) {
+	for (size_t i = parser->position; parse_status && i < parser->buffer_length; i++) {
 		switch (parser->buffer[i]) {
 		case '"':
 			while (parser->buffer[++i] != '"');
@@ -236,7 +241,7 @@ CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser) {
 
 		case '\n':
 			parser->buffer[i] = '\0';
-			parser->parser_pos = ++i;
+			parser->position = ++i;
 			parse_status = 0;
 			break;
 
@@ -244,14 +249,14 @@ CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser) {
 			if (i + 1 < parser->buffer_length && parser->buffer[i + 1] == '\n') {
 				i++;
 				parser->buffer[i] = '\0';
-				parser->parser_pos = ++i;
+				parser->position = ++i;
 				parse_status = 0;
 			}
 			break;
 
 		case ',':
 			parser->buffer[i] = '\0';
-			parser->parser_pos = ++i;
+			parser->position = ++i;
 			parse_status = 0;
 			break;
 
@@ -259,6 +264,9 @@ CSV_PARSER_DEFN_API uint8_t *csv_parser_next(csv_parser *parser) {
 			break;
 		}
 	}
+
+	*length = (parser->buffer + parser->position - 1) - next_token;
+
 	return next_token;
 }
 
