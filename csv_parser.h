@@ -57,6 +57,12 @@ struct csv_parser {
 	size_t columns;
 	size_t lines;
 
+	struct {
+		char *reason;
+		size_t column;
+		size_t line;
+	} error;
+
 	// internal
 	uint8_t *buffer;
 	uint8_t *position;
@@ -109,26 +115,43 @@ static int64_t _csv_parser_count_columns(csv_parser *parser) {
 
 	uint8_t *end = parser->buffer + parser->buffer_length;
 
+	uint8_t *start = parser->position;
+
 	while (parser->position < end && *parser->position != '\n') {
 		switch (*parser->position) {
 		case '"': // field inside double quotes
 			while (parser->position < end && *parser->position != '"') {
-				if (*parser->position == '\n' || *parser->position == '\r')
+				if (*parser->position == '\n' || *parser->position == '\r') {
+					parser->error.reason = "Could not find matching \".";
+					parser->error.column = parser->position - start;
 					return -1;
+				}
 				parser->position += 1;
 			}
-			if (parser->position == end) return -1;
+			if (parser->position == end) {
+				parser->error.reason = "Could not find matching \". Reached end of file.";
+				parser->error.column = parser->position - start;
+				return -1;
+			}
 			break;
 		case '\'': // field inside single quotes
 			while (parser->position < end && *parser->position != '\'') {
-				if (*parser->position == '\n' || *parser->position == '\r')
+				if (*parser->position == '\n' || *parser->position == '\r') {
+					parser->error.reason = "Could not find matching '.";
+					parser->error.column = parser->position - start;
 					return -1;
+				}
 				parser->position += 1;
 			}
-			if (parser->position == end) return -1;
+			if (parser->position == end) {
+				parser->error.reason = "Could not find matching '. Reached end of file.";
+				parser->error.column = parser->position - start;
+				return -1;
+			}
 			break;
 		case ',':
 			*parser->position = '\0';
+			start = parser->position + 1;
 			count++;
 			break;
 		default:
@@ -149,14 +172,22 @@ static csv_parser_bool _csv_parser_count_lines_and_columns(csv_parser *parser) {
 	CSV_PARSER_ASSERT(parser->buffer && parser->position);
 
 	int64_t columns = _csv_parser_count_columns(parser);
-	if (columns == -1) return 0;
+	if (columns == -1) {
+		parser->error.line = 1;
+		return 0;
+	}
 
 	uint8_t *end = parser->buffer + parser->buffer_length;
 
 	int64_t next_columns;
 	while ((next_columns = _csv_parser_count_columns(parser))) {
-		if (next_columns == -1 || (columns != next_columns && columns != 0))
+		if (next_columns == -1 || (columns != next_columns && columns != 0)) {
+			parser->error.line = parser->lines + 1;
+			if (columns != next_columns) {
+				parser->error.reason = "Not enough number of values.";
+			}
 			return 0;
+		}
 
 		parser->lines += (columns != 0);
 
@@ -176,6 +207,10 @@ CSV_PARSER_DEFN_API void csv_parser_init(csv_parser *parser, void *allocator_con
 	parser->lines = 0;
 	parser->position = 0;
 	parser->allocator_context = allocator_context;
+
+	parser->error.reason = NULL;
+	parser->error.column = 0;
+	parser->error.line = 0;
 }
 
 CSV_PARSER_DEFN_API void *csv_parser_malloc(size_t size, void *context) {
@@ -219,12 +254,17 @@ CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load_file(csv_parser *parser, FIL
 	CSV_PARSER_ASSERT(fp);
 	size_t buffer_length = _csv_parser_get_file_size(fp);
 	uint8_t *buffer = csv_parser_malloc((buffer_length + 1) * sizeof(*buffer), parser->allocator_context);
-	if (buffer == NULL)
+	if (buffer == NULL) {
+		parser->error.reason = "Allocation failed. Out of memory.";
 		return 0;
+	}
 	buffer[buffer_length] = 0;
 	size_t result = fread(buffer, buffer_length, 1, fp);
 
-	if (result != 1) return 0;
+	if (result != 1) {
+		parser->error.reason = "File could not be read.";
+		return 0;
+	}
 	return csv_parser_load_buffer(parser, buffer, buffer_length);
 }
 
@@ -235,6 +275,7 @@ CSV_PARSER_DEFN_API csv_parser_bool csv_parser_load(csv_parser *parser, const ch
 		fclose(fp);
 		return result;
 	}
+	parser->error.reason = "File could not be opened for reading.";
 	return 0;
 }
 

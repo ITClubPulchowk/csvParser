@@ -173,5 +173,12 @@ int main(int argc, char *argv[]) {
 
 		csv_parser_release(&parser);
 	}
+	else {
+		if (parser.error.line && parser.error.column) {
+			printf("Line: %zu, Column: %zu :: ", parser.error.line, parser.error.column);
+		}
+		printf("Error: %s\n", parser.error.reason);
+	}
+
 	return 0;
 }
