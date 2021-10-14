@@ -73,7 +73,7 @@ CSV_PARSER_API void csv_parser_free(void *ptr, void *context);
 
 CSV_PARSER_API uint8_t *csv_parser_duplicate_buffer(csv_parser *parser, uint8_t *buffer, size_t length);
 
-// buffer must be null terminated
+// buffer must be null terminated and the length must not count the null terminator
 // must not call csv_parser_release, buffer get modified!
 // if you don't want your buffer to get modified, call csv_parser_load_duplicated instead
 CSV_PARSER_API void csv_parser_load_buffer(csv_parser *parser, uint8_t *buffer, size_t length);
@@ -101,6 +101,8 @@ static size_t _csv_parser_get_file_size(FILE *fp) {
 	fseek(fp, 0L, SEEK_SET);
 	return f_size;
 }
+
+#define _CSV_PARSER_ISSPACE(ch) ((ch) == ' ' || (ch) == '\f' || (ch) == '\n' || (ch) == '\r' || (ch) == '\t' || (ch) == '\v')
 
 static size_t _csv_parser_calculate_number_of_columns(csv_parser *parser) {
 	CSV_PARSER_ASSERT(parser->buffer);
@@ -132,6 +134,8 @@ static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len)
 		switch (buffer[i]) {
 		case '\n':
 			lines++;
+			while (_CSV_PARSER_ISSPACE(buffer[i + 1]))
+				++i;
 			break;
 
 		case '\r':
@@ -139,6 +143,8 @@ static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len)
 				lines++;
 				i++;
 			}
+			while (_CSV_PARSER_ISSPACE(buffer[i + 1]))
+				++i;
 			break;
 
 		default:
@@ -147,7 +153,7 @@ static size_t _csv_parser_calculate_number_of_lines(uint8_t *buffer, size_t len)
 	}
 	// If the file doesn't end with a newline, we need to add once,
 	// since that line won't be counted
-	return lines + (buffer[len - 1] != '\n' || buffer[len - 1] != '\n');
+	return lines + (buffer[len - 1] != '\n' && buffer[len - 1] != '\r');
 }
 
 CSV_PARSER_DEFN_API void csv_parser_init(csv_parser *parser, void *allocator_context) {
