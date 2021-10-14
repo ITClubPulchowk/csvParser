@@ -1,6 +1,6 @@
 
-#ifndef CSV_SERIALIZER_HPP
-#define CSV_SERIALIZER_HPP
+#ifndef CSV_DESERIALIZER_HPP
+#define CSV_DESERIALIZER_HPP
 
 #include "csv_parser.h"
 
@@ -18,26 +18,26 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 
 
 
-csv_parser_bool csv_serialize_cstr(char *str, size_t len, void *value);
-csv_parser_bool csv_serialize_boolean(char* str, size_t len, void* value);
-csv_parser_bool csv_serialize_real(char* str, size_t len, void* value);
+csv_parser_bool csv_deserialize_cstr(void* context, char *str, size_t len, void *value);
+csv_parser_bool csv_deserialize_boolean(void* context, char* str, size_t len, void* value);
+csv_parser_bool csv_deserialize_real(void* context, char* str, size_t len, void* value);
 
-typedef csv_parser_bool (*serializer)(char *, size_t length, void *value);
+typedef csv_parser_bool (*deserializer)(void* context, char *, size_t length, void *value);
 typedef csv_parser_bool bool;
 
-typedef struct CSV_SERIALIZE_DESC
+typedef struct CSV_DESERIALIZE_DESC
 {
   // type *types; // type of the ith entry/field
-  serializer  *serializer;        
-  int         *offset; // provide offset of 0th member and so-on
-  int          length;  // Total members of the struct 
-} CSV_SERIALIZE_DESC;
+  deserializer  *deserializer;        
+  int           *offset; // provide offset of 0th member and so-on
+  int            length;  // Total members of the struct 
+} CSV_DESERIALIZE_DESC;
 
-int32_t csv_serialize(void* context, void *ptr_to_struct, CSV_SERIALIZE_DESC *desc,csv_parser* parser, size_t stride, size_t no_of_records);
+int32_t csv_deserialize(void* context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc,size_t stride,csv_parser* parser, size_t no_of_records);
 
 
 
-#ifdef CSV_SERIALIZER_IMPLEMENTATION
+#ifdef CSV_DESERIALIZER_IMPLEMENTATION
 
 csv_parser_bool csv_parse_length_string(char *value, size_t len, csv_parser_string *out) {
 	if (len) {
@@ -129,7 +129,7 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 }
 
 
-csv_parser_bool csv_serialize_cstr(char* str, size_t len,void* value)
+csv_parser_bool csv_deserialize_cstr(void* context,char* str, size_t len,void* value)
 {
   char* ptr = strdup(str);
   if(!ptr)
@@ -140,12 +140,12 @@ csv_parser_bool csv_serialize_cstr(char* str, size_t len,void* value)
   return 1; 
 }
 
-csv_parser_bool csv_serialize_boolean(char* str, size_t len, void* value)
+csv_parser_bool csv_deserialize_boolean(void* context, char* str, size_t len, void* value)
 {
   return csv_parse_boolean(str,len,value);
 }
 
-csv_parser_bool csv_serialize_real(char* str, size_t len, void* value)
+csv_parser_bool csv_deserialize_real(void* context, char* str, size_t len, void* value)
 {
   return csv_parse_real(str,len,value);
 }
@@ -158,7 +158,7 @@ csv_parser_bool csv_serialize_real(char* str, size_t len, void* value)
 // To make it typesafe, something like float, int should be included .. i.e. limited support of types
 // function pointers
 
-int32_t csv_serialize(void* context, void *ptr_to_struct, CSV_SERIALIZE_DESC *desc,csv_parser* parser, size_t stride, size_t no_of_records) {
+int32_t csv_deserialize(void* context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc,size_t stride,csv_parser* parser, size_t no_of_records) {
   CSV_PARSER_ASSERT(ptr_to_struct!=NULL && desc != NULL);
 
   size_t length = 0;
@@ -180,7 +180,7 @@ int32_t csv_serialize(void* context, void *ptr_to_struct, CSV_SERIALIZE_DESC *de
     for (int col = 0; col < parser->columns; ++col)
     {
       char* value = csv_parser_next(parser,&length);
-      desc->serializer[col](value,length,(char*)ptr_to_struct + desc->offset[col]);
+      desc->deserializer[col](context,value,length,(char*)ptr_to_struct + desc->offset[col]);
     }
     ptr_to_struct = (char*)ptr_to_struct + stride;
   }
