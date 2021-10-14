@@ -1,7 +1,7 @@
 #define CSV_PARSER_IMPLEMENTATION
 #include "../csv_parser.h"
-#define CSV_SERIALIZER_IMPLEMENTATION
-#include "../csv_serializer.h"
+#define CSV_DESERIALIZER_IMPLEMENTATION
+#include "../csv_deserializer.h"
 
 
 struct info
@@ -35,27 +35,25 @@ void print_info(struct info* str)
 
 int main()
 {
-  CSV_SERIALIZE_DESC desc;
+  CSV_DESERIALIZE_DESC desc;
   desc.length = 8;
 
   // Allocate memory 
-  desc.serializer = malloc(sizeof(*desc.serializer) * desc.length);
-  desc.offset = malloc(sizeof(*desc.offset) * desc.length);
+
 
   // Fill in the descriptions manually
-  serializer funcs[] = {
-    csv_serialize_cstr,
-    csv_serialize_boolean,
-    csv_serialize_boolean,
-    csv_serialize_boolean,
-    csv_serialize_boolean,
-    csv_serialize_real,
-    csv_serialize_real,
-    csv_serialize_real
+  deserializer funcs[] = {
+    csv_deserialize_cstr,
+    csv_deserialize_boolean,
+    csv_deserialize_boolean,
+    csv_deserialize_boolean,
+    csv_deserialize_boolean,
+    csv_deserialize_real,
+    csv_deserialize_real,
+    csv_deserialize_real
   };
- 
-  memcpy(desc.serializer,funcs,sizeof(funcs));
 
+  desc.deserializer = funcs;
   
   int offsets[] = {
     stoffset(name),
@@ -67,8 +65,9 @@ int main()
     stoffset(runtime),
     stoffset(memory)
   };
-  memcpy(desc.offset,offsets,sizeof(offsets));
 
+  desc.offset = offsets;
+  
   csv_parser parser;
   csv_parser_init(&parser, NULL);
   if (csv_parser_load(&parser, "./MOCK_DATA.csv")) {
@@ -85,7 +84,7 @@ int main()
     printf("\n");
 		
     struct info record_array[10];
-    int count = csv_serialize(NULL,record_array,&desc,&parser,sizeof(*record_array),5);
+    int count = csv_deserialize(NULL,record_array,&desc,sizeof(*record_array),&parser,5);
 
     for (int i = 0; i < count; ++i)
     {
