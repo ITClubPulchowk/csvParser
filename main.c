@@ -106,7 +106,9 @@ csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out)
 typedef struct dob {
 	int year, month, day;
 } dob;
-
+typedef struct time{
+	int hour,minutes,seconds;
+}time;
 //
 // Custom parser
 //
@@ -114,6 +116,22 @@ typedef struct dob {
 csv_parser_bool my_dob_parser(char *value, size_t len, dob *out) {
 	int n = sscanf(value, "%d/%d/%d", &out->month, &out->day, &out->year);
 	return n == 3;
+}
+csv_parser_bool time_parser(char *value,size_t len,time *out)
+{
+	int num=sscanf(value,"%d:%d:%d",&out->hour,&out->minutes,&out->seconds);
+	if(num==2)
+	{
+		num=sscanf(value,"%d:%d",&out->hour,&out->minutes);
+		return num==2;
+	}
+	else if(num==1)
+	{
+		num=sscanf(value,"%d",&out->hour);
+		return num==1;
+	}
+	else
+	return num==3;
 }
 
 int main(int argc, char *argv[]) {
