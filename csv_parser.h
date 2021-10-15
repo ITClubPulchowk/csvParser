@@ -5,6 +5,10 @@
 // [CONFIGURATION]
 //
 
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #ifndef CSV_PARSER_API
 #ifndef CSV_PARSER_API_STATIC
 #define CSV_PARSER_API extern
