@@ -2,17 +2,37 @@
 #ifndef CSV_DESERIALIZER_HPP
 #define CSV_DESERIALIZER_HPP
 
-//
-// [Csv Deserializer]
-//
+// Just safety :(
+#ifdef DOCUMENTATION_NOTE
+#undef DOCUMENTATION_NOTE
+#endif
 
 //
-// [Configuration]
+// <page:Csv Deserializer>
+//
+
+// <topic:Using the library>
+
+// <macro:Including the library>
+// This is header only library, to use this, just include this file.
+// This header is dependent to `csv_parser.h` and so `csv_parser.h` must be in the Includes directory for this library to work
+// This header must be included after `csv_parser.h` is included
+#ifdef DOCUMENTATION_NOTE
+#define CSV_DESERIALIZER_IMPLEMENTATION // This must only be one in one C/C++ file, forces to include implementation.
+#include "csv_deserializer.h" // Include declarations only if CSV_DESERIALIZER_IMPLEMENTATION is not defined
+#endif
+// </macro>
+
+// </topic>
+
+
+//
+// <topic:Configuration>
 //
 
 #include "csv_parser.h"
 
-// @Note: Removing strdup
+// <macro:Removing strdup>
 // To use custom srtdup CSV_STRING_DUPLICATE needs to get redefined before including csv_deserializer.h
 // Doing this string.h will not be included
 #ifdef DOCUMENTATION_NOTE
@@ -27,8 +47,9 @@
 #define CSV_STRING_DUPLICATE strdup
 #endif
 #endif
+// </macro>
 
-// @Note: Removing strtoll, strtoull and strtod
+// <macro:Removing strtoll, strtoull and strtod>
 // To use custom strtod, strtod and strtod; CSV_STRING_TO_INT64, CSV_STRING_TO_UINT64 and CSV_STRING_TO_DOUBLE needs to get redefined before including csv_deserializer.h
 // Doing this stdlib.h will not be included
 #ifdef DOCUMENTATION_NOTE
@@ -43,16 +64,28 @@
 #define CSV_STRING_TO_UINT64 strtoull
 #define CSV_STRING_TO_DOUBLE strtod
 #endif
+// </macro>
+
+//
+// </topic>
+//
 
 //
 // [Declarations]
 //
 
+//
+// <topic:API>
+//
+
+// <doc:struct>
+// String representation with length. Useful instead of using strlen multiple times
 typedef struct CSV_PARSER_STRING
 {
-	uint8_t *data;
-	size_t len;
+	uint8_t *data; // Pointer to the underlying c string
+	size_t len; // Length of the string
 } CSV_PARSER_STRING;
+// </doc>
 
 CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_length_string(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
 CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_string(void *context, uint8_t *value, size_t len, char **out);
@@ -62,7 +95,6 @@ CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_sint(void *context, uint8_t *valu
 CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_uint(void *context, uint8_t *value, size_t len, uint64_t *out);
 CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_boolean(void *context, uint8_t *str, size_t len, CSV_PARSER_Bool *value);
 CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_real(void *context, uint8_t *str, size_t len, double *value);
-
 typedef CSV_PARSER_Bool(*CSV_Deserializer)(void *, uint8_t *, size_t, void *);
 
 typedef struct CSV_DESERIALIZE_DESC
@@ -73,6 +105,14 @@ typedef struct CSV_DESERIALIZE_DESC
 } CSV_DESERIALIZE_DESC;
 
 size_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records);
+
+//
+// </API>
+//
+
+//
+// </page>
+//
 
 //
 // [IMPLEMENTATION]

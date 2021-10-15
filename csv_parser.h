@@ -1,20 +1,29 @@
 #ifndef CSV_PARSER_H
 #define CSV_PARSER_H
 
+// Just safety :(
+#ifdef DOCUMENTATION_NOTE
+#undef DOCUMENTATION_NOTE
+#endif
+
 //
-// [CSV Parser]
+// <page:CSV Parser>
 //
 
-// @Note: Using the library
-// This is header only library, to use this, just include this file:
+// <topic:Using the library>
+
+// <macro:Including the library>
+// This is header only library, to use this, just include this file.
 #ifdef DOCUMENTATION_NOTE
 #define CSV_PARSER_IMPLEMENTATION // This must only be one in one C/C++ file, forces to include implementation
 #include "csv_parser.h" // Include declarations only if CSV_PARSER_IMPLEMENTATION is not defined
 #endif
+// </macro>
 
+// </topic>
 
 //
-// [Configuration]
+// <topic:Configuration>
 //
 
 #ifdef _MSC_VER
@@ -23,7 +32,7 @@
 #endif
 #endif
 
-// @Note: Compilation method
+// <macro:Compilation method>
 // The compilation configuration can be static and extern, by default it is extern
 // If static compilation for all the API is required, then CSV_PARSER_API_STATIC needs to get defined before including csv_parser.h
 #ifdef DOCUMENTATION_NOTE
@@ -43,9 +52,10 @@
 #error "If CSV_PARSER_API is defined, then CSV_PARSER_DEFN_API must also be defined"
 #endif
 #endif
+// </macro>
 
 
-// @Note: Using custom assert
+// <macro:Using Custom Assert>
 // Custom assert can be used by defining CSV_PARSER_ASSERT  before including csv_parser.h
 // When custom assert is used, assert.h is not included
 #ifdef DOCUMENTATION_NOTE
@@ -56,13 +66,15 @@
 #include <assert.h>
 #define CSV_PARSER_ASSERT assert
 #endif
+// </macro>
 
-// @Note: Using custom allocators
+
+// <macro:Using Custom Allocators>
 // To use custom allocators, CSV_PARSER_MALLOC and CSV_PARSER_FREE both needs to get redefined before including csv_parser.h
 // When custom allocators are used, stdlib.h is not included
 #ifdef DOCUMENTATION_NOTE
-#define CSV_PARSER_MALLOC(size, context) my_allocator_malloc(size)
-#define CSV_PARSER_FREE(ptr, context) my_allocator_free(ptr)
+#define CSV_PARSER_MALLOC(size, context) my_allocator_malloc(size, context)
+#define CSV_PARSER_FREE(ptr, context) my_allocator_free(ptr, context)
 #endif
 
 #ifndef CSV_PARSER_MALLOC
@@ -74,8 +86,10 @@
 #error "If CSV_PARSER_MALLOC is defined, then CSV_PARSER_FREE must also be defined"
 #endif
 #endif
+// </macro>
 
-// @Note: Using custom memcpy
+
+// <macro:Using Custom memcpy>
 // To use custom memcpy, CSV_PARSER_MEMCPY needs to get redefined before including csv_parser.h
 // When custom memcpy is used, string.h is not included
 #ifdef DOCUMENTATION_NOTE
@@ -86,8 +100,9 @@
 #include <string.h>
 #define CSV_PARSER_MEMCPY memcpy
 #endif
+// </macro>
 
-// @Note: Removing stdio
+// <macro:Removing stdio>
 // To replace including stdio.h, define CSV_PARSER_NO_STDIO before including csv_parser.h
 #ifdef DOCUMENTATION_NOTE
 #define CSV_PARSER_NO_STDIO
@@ -96,6 +111,11 @@
 #ifndef CSV_PARSER_NO_STDIO
 #include <stdio.h>
 #endif
+// </macro>
+
+//
+// </topic>
+//
 
 #include <stdint.h>
 
@@ -106,48 +126,182 @@
 
 typedef int32_t CSV_PARSER_Bool;
 
+//
+// <topic:API>
+//
+
+// <doc:struct>
+// [[CSV_PARSER]] is passed to [[Buffer Loading Procedures]] and gets filled by these functions
 struct CSV_PARSER {
-	// public
-	size_t columns;
-	size_t lines;
+	// Public
+	size_t columns; // Number of columns present in the CSV buffer. Filled when [[csv_parser_load_buffer]] is called
+	size_t lines; // Number of rows (including the header) in the CSV buffer. Filled when [[csv_parser_load_buffer]] is called
 
 	struct {
-		char *reason;
-		size_t column;
-		size_t line;
-	} error;
+		char *reason; // Reason for why the error happened
+		size_t column; // Value is non zero if the CSV buffer is invalid and represent the column where the parsing error occured. For other error value is zero.
+		size_t line; // Value is non zero if the CSV buffer is invalid and represent the row where the parsing error occured. For other error value is zero.
+	} error; // Constains error information. Filled if [[csv_parser_load_buffer]] returns false
 
-	// internal
-	uint8_t *buffer;
-	uint8_t *position;
-	size_t buffer_length;
+	// Internal
+	uint8_t *buffer; // The pointer to the CSV buffer.
+	uint8_t *position; // The position upto where the CSV buffer is parsed.
+	size_t buffer_length; // The length of the [[CSV_PARSER]].buffer.
 
-	void *allocator_context;
+	void *allocator_context; // User data which is passed to [[csv_parser_malloc]] and [[csv_parser_free]]
 };
+// </doc>
 typedef struct CSV_PARSER CSV_PARSER;
 
+
+// <doc:proc>
+// Initializes [[CSV_PARSER]] with the allocator context
+// @param: The pointer to [[CSV_PARSER]] to be initialized
+// @param: The allocator context
 CSV_PARSER_API void csv_parser_init(CSV_PARSER *parser, void *allocator_context);
+// Allocator context is the user data which is passed to [[csv_parser_malloc]] and [[csv_parser_free]]
+// Other values are set to default values. This procedure must be called before loading the CSV buffer
+// </doc>
 
+// <doc:proc>
+// CSV procedure to allocate memory. By default uses malloc from standard C library.
+// @param: The size of the memory yo be allocated
+// @param: The allocator context
 CSV_PARSER_API void *csv_parser_malloc(size_t size, void *context);
+// To use custom allocator, see [[Using Custom Allocators]]
+// </doc>
+
+// <doc:proc>
+// CSV procedure to free memory allocated using [[csv_parser_malloc]]. By default uses free from standard C library.
+// @param: The pointer to the memory to be freed. Must be the pointer returned by [[csv_parser_malloc]]
+// @param: The allocator context
 CSV_PARSER_API void csv_parser_free(void *ptr, void *context);
+// To use custom allocator, see [[Using Custom Allocators]]
+// </doc>
 
+// <doc:proc>
+// Allocates memory and copy and null terminates the given buffer using the allocator context present in given [[CSV_PARSER]]
+// @param: The parser whose allocator context is to be used for allocation
+// @param: The buffer to be duplicated
+// @param: The length of the given buffer
+// @return: The duplicated and null terminated buffer
 CSV_PARSER_API uint8_t *csv_parser_duplicate_buffer(CSV_PARSER *parser, uint8_t *buffer, size_t length);
+// </doc>
 
-// buffer must be null terminated and the length must not count the null terminator
-// must not call csv_parser_release, buffer get modified!
-// if you don't want your buffer to get modified, call csv_parser_load_duplicated instead
+//
+// <subtopic:Buffer Loading Procedures>
+// 
+
+// <doc:proc>
+// Loads the CSV buffer for parsing
+// param: Parser where the buffer is to be associated with
+// param: The CSV buffer. The buffer must be null terminated
+// param: The length of the buffer. The length of the buffer MUST not count the null terminator
+// return: Non zero if the passed CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [[CSV_PARSER]].error
 CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_buffer(CSV_PARSER *parser, uint8_t *buffer, size_t length);
+// The buffer gets modified by this function
+// If the given buffer should not be modified, use [[csv_parser_load_duplicated]] instead
+// </doc>
 
-CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_duplicated(CSV_PARSER *parser, uint8_t *buffer, size_t length); // requires call to csv_parser_release
+// <doc:proc>
+// Loads the CSV buffer by duplicating the original buffer by calling [[csv_parser_duplicate_buffer]]
+// param: Parser where the duplicated buffer is to be associated with
+// param: The CSV buffer. The buffer may or may not be null terminated
+// param: The length of the buffer. The length of the buffer MUST not count the null terminator if null terminator is present in the given buffer
+// return: Non zero if the passed CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [[CSV_PARSER]].error
+CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_duplicated(CSV_PARSER *parser, uint8_t *buffer, size_t length);
+// Allocates memory for buffer. To release that memory [[csv_parser_release]] must be called
+// This procedure should be used if modification of the original buffer is not intended. 
+// Calling this procedure is equivalent to [[csv_parser_load_buffer]] after duplicating buffer using [[csv_parser_duplicate_buffer]]
+// </doc>
 
 #ifndef CSV_PARSER_NO_STDIO
-CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_file(CSV_PARSER *parser, FILE *fp); // requires call to csv_parser_release
+// <doc:proc>
+// Loads the CSV buffer for parsing by reading from given FILE *
+// param: Parser where the buffer is to be associated with
+// param: The file handle which is to be read to load the buffer
+// return: Non zero if the read CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [[CSV_PARSER]].error
+CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_file(CSV_PARSER *parser, FILE *fp);
+// Allocates memory for buffer. To release that memory [[csv_parser_release]] must be called
+// The file is read as a whole even if the cursor of the file is not present at the start
+// The position of the cursor of the file handle will be at the end of the file if this procedure passes
+// The position of the cursor of the file handle is undefined if this procedure fails
+// </doc>
+
+// <doc:proc>
+// Loads the file from the given file path, reads the CSV buffer from the file, loads the CSV buffer into [[CSV_PARSER]]
+// param: Parser where the CSV buffer is to be associated with
+// param: The path to the CSV file
+// return: Non zero if the read CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [[CSV_PARSER]].error
 CSV_PARSER_API CSV_PARSER_Bool csv_parser_load(CSV_PARSER *parser, const char *file_path); // requires call to csv_parser_release
+// Allocates memory for buffer. To release that memory [[csv_parser_release]] must be called
+// </doc>
+
+
+//
+// </subtopic>
+//
+
+// <doc:proc>
+// Release the buffer allocated by using [[csv_parser_load]], [[csv_parser_load_file]] and [[csv_parser_load_duplicated]]
+// param: The parser whose buffer is to be released
 CSV_PARSER_API void csv_parser_release(CSV_PARSER *parser);
+// </doc>
+
 #endif
 
+// <doc:proc>
+// Parses the next element in the CSV buffer
+// param: The parser whose next element should be parsed
+// param[o]: Returns the length of the UTF-8 string returned
+// return: The UTF-8 string of the next element
 CSV_PARSER_API uint8_t *csv_parser_next(CSV_PARSER *parser, size_t *length);
+// This procedure is expected to be called in a loop of [[CSV_PARSER]].rows and [[CSV_PARSER]].columns
+// The first [[CSV_PARSER]].columns values are always the heading of the CSV buffer
+// </doc>
 
+//
+// </API>
+//
+
+// <example: Parsing a basic struct>
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_IMPLEMENTATION
+#include "csv_parser.h"
+
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+	if (argc != 2) {
+		fprintf(stderr, "Invalid. USAGE: %s <csv_file>\n", argv[0]);
+		return 1;
+	}
+
+	csv_parser parser;
+	csv_parser_init(&parser, NULL);
+	if (csv_parser_load(&parser, argv[1])) {
+		for (int row = 0; row < parser.lines; ++row) {
+			for (int col = 0; col < parser.columns; ++col) {
+				char *value = csv_parser_next(&parser);
+				printf("%s ", value);
+			}
+			printf("\n");
+		}
+
+		csv_parser_release(&parser);
+	}
+	return 0;
+}
+#endif
+// </example>
+
+//
+// </topic>
+//
+
+//
+// </page>
+//
 
 //
 // [IMPLEMENTATION]
