@@ -3,14 +3,14 @@
 
 #include <stdio.h>
 
-typedef csv_parser_bool(*csv_parse_proc)(char *value, size_t len, void *out);
+typedef CSV_PARSER_Bool(*csv_parse_proc)(char *value, size_t len, void *out);
 
-typedef struct csv_parser_string {
+typedef struct CSV_PARSER_STRING {
 	uint8_t *data;
 	size_t len;
-} csv_parser_string;
+} CSV_PARSER_STRING;
 
-csv_parser_bool csv_parse_length_string(char *value, size_t len, csv_parser_string *out) {
+CSV_PARSER_Bool csv_deserialize_length_string(char *value, size_t len, CSV_PARSER_STRING *out) {
 	if (len) {
 		if (value[0] != '"') {
 			out->data = value;
@@ -26,7 +26,7 @@ csv_parser_bool csv_parse_length_string(char *value, size_t len, csv_parser_stri
 	return 0;
 }
 
-csv_parser_bool csv_parse_string(char *value, size_t len, char **out) {
+CSV_PARSER_Bool csv_deserialize_string(char *value, size_t len, char **out) {
 	if (len) {
 		if (value[0] != '"') {
 			*out = value;
@@ -40,7 +40,7 @@ csv_parser_bool csv_parse_string(char *value, size_t len, char **out) {
 	return 0;
 }
 
-csv_parser_bool csv_parse_sint(char *value, size_t len, int radix, int64_t *out) {
+CSV_PARSER_Bool csv_deserialize_sint(char *value, size_t len, int radix, int64_t *out) {
 	char *end = NULL;
 	long long num = strtoll(value, &end, radix);
 	if (value + len == end) {
@@ -50,7 +50,7 @@ csv_parser_bool csv_parse_sint(char *value, size_t len, int radix, int64_t *out)
 	return 0;
 }
 
-csv_parser_bool csv_parse_uint(char *value, size_t len, int radix, uint64_t *out) {
+CSV_PARSER_Bool csv_deserialize_uint(char *value, size_t len, int radix, uint64_t *out) {
 	char *end = NULL;
 	long long num = strtoull(value, &end, radix);
 	if (value + len == end) {
@@ -60,7 +60,7 @@ csv_parser_bool csv_parse_uint(char *value, size_t len, int radix, uint64_t *out
 	return 0;
 }
 
-csv_parser_bool csv_parse_real(char *value, size_t len, double *out) {
+CSV_PARSER_Bool csv_parse_real(char *value, size_t len, double *out) {
 	char *end = NULL;
 	double num = strtod(value, &end);
 	if (value + len == end) {
@@ -70,7 +70,7 @@ csv_parser_bool csv_parse_real(char *value, size_t len, double *out) {
 	return 0;
 }
 
-csv_parser_bool csv_parse_boolean(char *value, size_t len, csv_parser_bool *out) {
+CSV_PARSER_Bool csv_parse_boolean(char *value, size_t len, CSV_PARSER_Bool *out) {
 	switch (len) {
 	case 1:
 		*out = (value[0] == '1');
@@ -113,11 +113,11 @@ typedef struct time{
 // Custom parser
 //
 
-csv_parser_bool my_dob_parser(char *value, size_t len, dob *out) {
+CSV_PARSER_Bool my_dob_parser(char *value, size_t len, dob *out) {
 	int n = sscanf(value, "%d/%d/%d", &out->month, &out->day, &out->year);
 	return n == 3;
 }
-csv_parser_bool time_parser(char *value,size_t len,time *out)
+CSV_PARSER_Bool time_parser(char *value,size_t len,time *out)
 {
 	int num=sscanf(value,"%d:%d:%d",&out->hour,&out->minutes,&out->seconds);
 	if(num==2)
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
 	// test
 	csv_parse_proc user_parse_proc = (csv_parse_proc)my_dob_parser;
 
-	csv_parser parser;
+	CSV_PARSER parser;
 	csv_parser_init(&parser, NULL);
 	if (csv_parser_load(&parser, "./samples/MOCK_DATA.csv")) {
 		for (int col = 0; col < parser.columns; ++col) {
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
 				switch (col) {
 					case 0: {
 						char *out;
-						assert(csv_parse_string(value, length, &out));
+						assert(csv_deserialize_string(value, length, &out));
 						printf("%-12s ", out);
 					} break;
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
 					case 2:
 					case 3:
 					case 4: {
-						csv_parser_bool out;
+						CSV_PARSER_Bool out;
 						assert(csv_parse_boolean(value, length, &out));
 						printf("%-12s ", out ? "true" : "false");
 					} break;
