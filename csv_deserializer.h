@@ -10,7 +10,11 @@
 
 #ifndef CSV_STRING_DUPLICATE
 #include <string.h>
+#ifdef _MSC_VER
+#define CSV_STRING_DUPLICATE _strdup
+#else
 #define CSV_STRING_DUPLICATE strdup
+#endif
 #endif
 
 #if !defined(CSV_STRING_TO_INT64) || !defined(CSV_STRING_TO_UINT64) || !defined(CSV_STRING_TO_DOUBLE)
@@ -30,16 +34,16 @@ typedef struct CSV_PARSER_STRING
 	size_t len;
 } CSV_PARSER_STRING;
 
-CSV_PARSER_Bool csv_deserialize_length_string(void *context, char *value, size_t len, CSV_PARSER_STRING *out);
-CSV_PARSER_Bool csv_deserialize_string(void *context, char *value, size_t len, char **out);
-CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, char *value, size_t len, CSV_PARSER_STRING *out);
-CSV_PARSER_Bool csv_deserialize_stringdup(void *context, char *str, size_t len, char **value);
-CSV_PARSER_Bool csv_deserialize_sint(void *context, char *value, size_t len, int64_t *out);
-CSV_PARSER_Bool csv_deserialize_uint(void *context, char *value, size_t len, uint64_t *out);
-CSV_PARSER_Bool csv_deserialize_boolean(void *context, char *str, size_t len, CSV_PARSER_Bool *value);
-CSV_PARSER_Bool csv_deserialize_real(void *context, char *str, size_t len, double *value);
+CSV_PARSER_Bool csv_deserialize_length_string(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
+CSV_PARSER_Bool csv_deserialize_string(void *context, uint8_t *value, size_t len, char **out);
+CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
+CSV_PARSER_Bool csv_deserialize_stringdup(void *context, uint8_t *str, size_t len, char **value);
+CSV_PARSER_Bool csv_deserialize_sint(void *context, uint8_t *value, size_t len, int64_t *out);
+CSV_PARSER_Bool csv_deserialize_uint(void *context, uint8_t *value, size_t len, uint64_t *out);
+CSV_PARSER_Bool csv_deserialize_boolean(void *context, uint8_t *str, size_t len, CSV_PARSER_Bool *value);
+CSV_PARSER_Bool csv_deserialize_real(void *context, uint8_t *str, size_t len, double *value);
 
-typedef CSV_PARSER_Bool(*CSV_Deserializer)(void *, char *, size_t, void *);
+typedef CSV_PARSER_Bool(*CSV_Deserializer)(void *, uint8_t *, size_t, void *);
 
 typedef struct CSV_DESERIALIZE_DESC
 {
@@ -48,16 +52,15 @@ typedef struct CSV_DESERIALIZE_DESC
 	size_t				length;  // Total members of the struct 
 } CSV_DESERIALIZE_DESC;
 
-int32_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records);
+size_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records);
 
 //
 // [IMPLEMENTATION]
 //
 
-#define CSV_DESERIALIZER_IMPLEMENTATION
 #ifdef CSV_DESERIALIZER_IMPLEMENTATION
 
-CSV_PARSER_Bool csv_deserialize_length_string(void *context, char *value, size_t len, CSV_PARSER_STRING *out)
+CSV_PARSER_Bool csv_deserialize_length_string(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out)
 {
 	if (len) {
 		if (value[0] != '"') {
@@ -74,7 +77,7 @@ CSV_PARSER_Bool csv_deserialize_length_string(void *context, char *value, size_t
 	return 0;
 }
 
-CSV_PARSER_Bool csv_deserialize_string(void *context, char *value, size_t len, char **out)
+CSV_PARSER_Bool csv_deserialize_string(void *context, uint8_t *value, size_t len, char **out)
 {
 	if (len) {
 		if (value[0] != '"') {
@@ -89,7 +92,7 @@ CSV_PARSER_Bool csv_deserialize_string(void *context, char *value, size_t len, c
 	return 0;
 }
 
-CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, char *value, size_t len, CSV_PARSER_STRING *out)
+CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out)
 {
 	if (len) {
 		if (value[0] != '"') {
@@ -106,7 +109,7 @@ CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, char *value, siz
 	return 0;
 }
 
-CSV_PARSER_Bool csv_deserialize_stringdup(void *context, char *str, size_t len, char **value)
+CSV_PARSER_Bool csv_deserialize_stringdup(void *context, uint8_t *str, size_t len, char **value)
 {
 	char *ptr = CSV_STRING_DUPLICATE(str);
 	if (!ptr)
@@ -117,7 +120,7 @@ CSV_PARSER_Bool csv_deserialize_stringdup(void *context, char *str, size_t len, 
 	return 1;
 }
 
-CSV_PARSER_Bool csv_deserialize_sint(void *context, char *value, size_t len, int64_t *out)
+CSV_PARSER_Bool csv_deserialize_sint(void *context, uint8_t *value, size_t len, int64_t *out)
 {
 	char *end = NULL;
 	long long num = CSV_STRING_TO_INT64(value, &end, 10);
@@ -128,7 +131,7 @@ CSV_PARSER_Bool csv_deserialize_sint(void *context, char *value, size_t len, int
 	return 0;
 }
 
-CSV_PARSER_Bool csv_deserialize_uint(void *context, char *value, size_t len, uint64_t *out)
+CSV_PARSER_Bool csv_deserialize_uint(void *context, uint8_t *value, size_t len, uint64_t *out)
 {
 	char *end = NULL;
 	long long num = CSV_STRING_TO_UINT64(value, &end, 10);
@@ -139,7 +142,7 @@ CSV_PARSER_Bool csv_deserialize_uint(void *context, char *value, size_t len, uin
 	return 0;
 }
 
-CSV_PARSER_Bool csv_deserialize_boolean(void *context, char *value, size_t len, CSV_PARSER_Bool *out)
+CSV_PARSER_Bool csv_deserialize_boolean(void *context, uint8_t *value, size_t len, CSV_PARSER_Bool *out)
 {
 	switch (len) {
 	case 1:
@@ -169,7 +172,7 @@ CSV_PARSER_Bool csv_deserialize_boolean(void *context, char *value, size_t len, 
 	return 0;
 }
 
-CSV_PARSER_Bool csv_deserialize_real(void *context, char *value, size_t len, double *out)
+CSV_PARSER_Bool csv_deserialize_real(void *context, uint8_t *value, size_t len, double *out)
 {
 	char *end = NULL;
 	double num = CSV_STRING_TO_DOUBLE(value, &end);
@@ -188,7 +191,7 @@ CSV_PARSER_Bool csv_deserialize_real(void *context, char *value, size_t len, dou
 // To make it typesafe, something like float, int should be included .. i.e. limited support of types
 // function pointers
 
-int32_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records) {
+size_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records) {
 	CSV_PARSER_ASSERT(ptr_to_struct != NULL && desc != NULL);
 
 	size_t length = 0;
@@ -196,21 +199,21 @@ int32_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC
 
 	CSV_PARSER_ASSERT(desc->length == parser->columns);
 
-	int lines_to_parse = parser->lines - 1; // 1st row consumed by the header information
+	size_t lines_to_parse = parser->lines - 1; // 1st row consumed by the header information
 
-	int records_to_parse = lines_to_parse;
+	size_t records_to_parse = lines_to_parse;
 	if (no_of_records < records_to_parse)
 	{
 		records_to_parse = no_of_records;
 	}
 
-	for (int record = 0; record < records_to_parse; ++record)
+	for (size_t record = 0; record < records_to_parse; ++record)
 	{
 
-		for (int col = 0; col < parser->columns; ++col)
+		for (size_t col = 0; col < parser->columns; ++col)
 		{
-			char *value = csv_parser_next(parser, &length);
-			desc->CSV_Deserializer[col](context, value, length, (char *)ptr_to_struct + desc->offset[col]);
+			uint8_t *value = csv_parser_next(parser, &length);
+			desc->deserializer[col](context, value, length, (char *)ptr_to_struct + desc->offset[col]);
 		}
 		ptr_to_struct = (char *)ptr_to_struct + stride;
 	}
@@ -218,5 +221,6 @@ int32_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC
 	return records_to_parse;
 }
 
-#endif
+#endif // [IMPLEMENTATION]
+
 #endif
