@@ -2,13 +2,20 @@
 #define CSV_PARSER_H
 
 //
-// [CONFIGURATION]
+// [CSV Parser]
+//
+
+//
+// [Configuration]
 //
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+// @Note
+// The compilation configuration can be static and extern, by default it is extern
+// If static compilation for all the API is required
 #ifndef CSV_PARSER_API
 #ifndef CSV_PARSER_API_STATIC
 #define CSV_PARSER_API extern
