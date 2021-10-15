@@ -3,10 +3,21 @@
 #define CSV_DESERIALIZER_HPP
 
 //
-// [CONFIGURATION]
+// [Csv Deserializer]
+//
+
+//
+// [Configuration]
 //
 
 #include "csv_parser.h"
+
+// @Note: Removing strdup
+// To use custom srtdup CSV_STRING_DUPLICATE needs to get redefined before including csv_deserializer.h
+// Doing this string.h will not be included
+#ifdef DOCUMENTATION_NOTE
+#define CSV_STRING_DUPLICATE my_custom_srtdup
+#endif
 
 #ifndef CSV_STRING_DUPLICATE
 #include <string.h>
@@ -17,6 +28,15 @@
 #endif
 #endif
 
+// @Note: Removing strtoll, strtoull and strtod
+// To use custom strtod, strtod and strtod; CSV_STRING_TO_INT64, CSV_STRING_TO_UINT64 and CSV_STRING_TO_DOUBLE needs to get redefined before including csv_deserializer.h
+// Doing this stdlib.h will not be included
+#ifdef DOCUMENTATION_NOTE
+#define CSV_STRING_TO_INT64 my_custom_strtoll
+#define CSV_STRING_TO_UINT64 my_custom_strtoull
+#define CSV_STRING_TO_DOUBLE my_custom_strtod
+#endif
+
 #if !defined(CSV_STRING_TO_INT64) || !defined(CSV_STRING_TO_UINT64) || !defined(CSV_STRING_TO_DOUBLE)
 #include <stdlib.h>
 #define CSV_STRING_TO_INT64 strtoll
@@ -25,7 +45,7 @@
 #endif
 
 //
-// [DECLARATIONS]
+// [Declarations]
 //
 
 typedef struct CSV_PARSER_STRING
@@ -221,6 +241,6 @@ CSV_PARSER_DEFN_API size_t csv_deserialize(void *context, void *ptr_to_struct, C
 	return records_to_parse;
 }
 
-#endif // [IMPLEMENTATION]
+#endif // CSV_DESERIALIZER_IMPLEMENTATION
 
 #endif

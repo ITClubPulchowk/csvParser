@@ -5,17 +5,31 @@
 // [CSV Parser]
 //
 
+// @Note: Using the library
+// This is header only library, to use this, just include this file:
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_IMPLEMENTATION // This must only be one in one C/C++ file, forces to include implementation
+#include "csv_parser.h" // Include declarations only if CSV_PARSER_IMPLEMENTATION is not defined
+#endif
+
+
 //
 // [Configuration]
 //
 
 #ifdef _MSC_VER
+#ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
 #endif
+#endif
 
-// @Note
+// @Note: Compilation method
 // The compilation configuration can be static and extern, by default it is extern
-// If static compilation for all the API is required
+// If static compilation for all the API is required, then CSV_PARSER_API_STATIC needs to get defined before including csv_parser.h
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_API_STATIC
+#endif
+
 #ifndef CSV_PARSER_API
 #ifndef CSV_PARSER_API_STATIC
 #define CSV_PARSER_API extern
@@ -30,9 +44,25 @@
 #endif
 #endif
 
+
+// @Note: Using custom assert
+// Custom assert can be used by defining CSV_PARSER_ASSERT  before including csv_parser.h
+// When custom assert is used, assert.h is not included
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_ASSERT(x) my_custom_assert(...)
+#endif
+
 #ifndef CSV_PARSER_ASSERT
 #include <assert.h>
 #define CSV_PARSER_ASSERT assert
+#endif
+
+// @Note: Using custom allocators
+// To use custom allocators, CSV_PARSER_MALLOC and CSV_PARSER_FREE both needs to get redefined before including csv_parser.h
+// When custom allocators are used, stdlib.h is not included
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_MALLOC(size, context) my_allocator_malloc(size)
+#define CSV_PARSER_FREE(ptr, context) my_allocator_free(ptr)
 #endif
 
 #ifndef CSV_PARSER_MALLOC
@@ -45,9 +75,22 @@
 #endif
 #endif
 
+// @Note: Using custom memcpy
+// To use custom memcpy, CSV_PARSER_MEMCPY needs to get redefined before including csv_parser.h
+// When custom memcpy is used, string.h is not included
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_MEMCPY my_custom_memcpy
+#endif
+
 #ifndef CSV_PARSER_MEMCPY
 #include <string.h>
 #define CSV_PARSER_MEMCPY memcpy
+#endif
+
+// @Note: Removing stdio
+// To replace including stdio.h, define CSV_PARSER_NO_STDIO before including csv_parser.h
+#ifdef DOCUMENTATION_NOTE
+#define CSV_PARSER_NO_STDIO
 #endif
 
 #ifndef CSV_PARSER_NO_STDIO
@@ -58,7 +101,7 @@
 
 
 //
-// [DECLARATIONS]
+// [Declarations]
 //
 
 typedef int32_t CSV_PARSER_Bool;
