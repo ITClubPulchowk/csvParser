@@ -2,7 +2,27 @@
 #ifndef CSV_DESERIALIZER_HPP
 #define CSV_DESERIALIZER_HPP
 
+//
+// [CONFIGURATION]
+//
+
 #include "csv_parser.h"
+
+#ifndef CSV_STRING_DUPLICATE
+#include <string.h>
+#define CSV_STRING_DUPLICATE strdup
+#endif
+
+#if !defined(CSV_STRING_TO_INT64) || !defined(CSV_STRING_TO_UINT64) || !defined(CSV_STRING_TO_DOUBLE)
+#include <stdlib.h>
+#define CSV_STRING_TO_INT64 strtoll
+#define CSV_STRING_TO_UINT64 strtoull
+#define CSV_STRING_TO_DOUBLE strtod
+#endif
+
+//
+// [DECLARATIONS]
+//
 
 typedef struct CSV_PARSER_STRING
 {
@@ -30,6 +50,9 @@ typedef struct CSV_DESERIALIZE_DESC
 
 int32_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records);
 
+//
+// [IMPLEMENTATION]
+//
 
 #define CSV_DESERIALIZER_IMPLEMENTATION
 #ifdef CSV_DESERIALIZER_IMPLEMENTATION
@@ -70,7 +93,7 @@ CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, char *value, siz
 {
 	if (len) {
 		if (value[0] != '"') {
-			out->data = strdup(value);
+			out->data = CSV_STRING_DUPLICATE(value);
 			out->len = len;
 			return 1;
 		}
@@ -85,7 +108,7 @@ CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, char *value, siz
 
 CSV_PARSER_Bool csv_deserialize_stringdup(void *context, char *str, size_t len, char **value)
 {
-	char *ptr = strdup(str);
+	char *ptr = CSV_STRING_DUPLICATE(str);
 	if (!ptr)
 		return 0;
 	// ---> Unsafe casting here <----- ; This is C land.. who cares 
@@ -97,7 +120,7 @@ CSV_PARSER_Bool csv_deserialize_stringdup(void *context, char *str, size_t len, 
 CSV_PARSER_Bool csv_deserialize_sint(void *context, char *value, size_t len, int64_t *out)
 {
 	char *end = NULL;
-	long long num = strtoll(value, &end, 10);
+	long long num = CSV_STRING_TO_INT64(value, &end, 10);
 	if (value + len == end) {
 		*out = (int64_t)num;
 		return 1;
@@ -108,7 +131,7 @@ CSV_PARSER_Bool csv_deserialize_sint(void *context, char *value, size_t len, int
 CSV_PARSER_Bool csv_deserialize_uint(void *context, char *value, size_t len, uint64_t *out)
 {
 	char *end = NULL;
-	long long num = strtoull(value, &end, 10);
+	long long num = CSV_STRING_TO_UINT64(value, &end, 10);
 	if (value + len == end) {
 		*out = (uint64_t)num;
 		return 1;
@@ -149,7 +172,7 @@ CSV_PARSER_Bool csv_deserialize_boolean(void *context, char *value, size_t len, 
 CSV_PARSER_Bool csv_deserialize_real(void *context, char *value, size_t len, double *out)
 {
 	char *end = NULL;
-	double num = strtod(value, &end);
+	double num = CSV_STRING_TO_DOUBLE(value, &end);
 	if (value + len == end) {
 		*out = num;
 		return 1;
