@@ -129,7 +129,7 @@ typedef struct CSV_PARSER {
 	size_t buffer_length; /*!< The length of the [CSV_PARSER](@ref CSV_PARSER)::buffer. */
 
 	void *allocator_context; /*!< User data which is passed to [csv_parser_malloc](@ref csv_parser_malloc) and [csv_parser_free](@ref csv_parser_free) */
-} CSV_PARSER CSV_PARSER;
+} CSV_PARSER;
 
 /*! \fn void csv_parser_init(CSV_PARSER *parser, void *allocator_context)
 	\brief Initializes [CSV_PARSER](@ref CSV_PARSER) with the allocator context
