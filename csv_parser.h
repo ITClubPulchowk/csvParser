@@ -1,41 +1,5 @@
 /*! \file csv_parser.h
-	\brief A Library for parsing CSV files
-
-	csvParser is header only library, to use this, just include this file.
-	```c
-	#define CSV_PARSER_IMPLEMENTATION // This must only be one in one C/C++ file, forces to include implementation
-	#include "csv_parser.h" // Include declarations only if CSV_PARSER_IMPLEMENTATION is not defined
-	```
-
-	Example:
-	```c
-	#define CSV_PARSER_IMPLEMENTATION
-	#include "csv_parser.h"
-
-	#include <stdio.h>
-
-	int main(int argc, char *argv[]) {
-		if (argc != 2) {
-			fprintf(stderr, "Invalid. USAGE: %s <csv_file>\n", argv[0]);
-			return 1;
-		}
-
-		csv_parser parser;
-		csv_parser_init(&parser, NULL);
-		if (csv_parser_load(&parser, argv[1])) {
-			for (int row = 0; row < parser.lines; ++row) {
-				for (int col = 0; col < parser.columns; ++col) {
-					char *value = csv_parser_next(&parser);
-					printf("%s ", value);
-				}
-				printf("\n");
-			}
-
-			csv_parser_release(&parser);
-		}
-		return 0;
-	}
-	```
+	\brief A Library for parsing CSV files. csvParser is header only library, to use this, just include this file.
 */
 
 #ifndef CSV_PARSER_H
@@ -47,7 +11,7 @@
 #endif
 #endif
 
-/*! \def CSV_PARSER_API_STATIC
+/*! \def CSV_PARSER_API
 	\brief The compilation configuration can be static and extern, by default it is extern. If static compilation for all the API is required, then CSV_PARSER_API_STATIC needs to get defined before including csv_parser.h
 */
 #ifndef CSV_PARSER_API
@@ -93,10 +57,11 @@
 #define CSV_PARSER_MEMCPY memcpy
 #endif
 
-/*! \def CSV_PARSER_NO_STDIO
+/*! \def CSV_PARSER_STDIO_INCLUDED
 	\brief To replace including stdio.h, define CSV_PARSER_NO_STDIO before including csv_parser.h
 */
 #ifndef CSV_PARSER_NO_STDIO
+#define CSV_PARSER_STDIO_INCLUDED
 #include <stdio.h>
 #endif
 
@@ -110,7 +75,7 @@
 typedef int32_t CSV_PARSER_Bool;
 
 /*! \struct CSV_PARSER
-	\brief [CSV_PARSER](@ref CSV_PARSER) is passed to [[Buffer Loading Procedures]] and gets filled by these functions
+	\brief [CSV_PARSER](@ref CSV_PARSER) is passed to Buffer Loading Procedures and gets filled by these functions
 */
 typedef struct CSV_PARSER {
 	// Public
@@ -126,7 +91,7 @@ typedef struct CSV_PARSER {
 	// Internal
 	uint8_t *buffer; /*!< The pointer to the CSV buffer. */
 	uint8_t *position; /*!< The position upto where the CSV buffer is parsed. */
-	size_t buffer_length; /*!< The length of the [CSV_PARSER](@ref CSV_PARSER)::buffer. */
+	size_t buffer_length; /*!< The length of the [CSV_PARSER::buffer](@ref CSV_PARSER::buffer). */
 
 	void *allocator_context; /*!< User data which is passed to [csv_parser_malloc](@ref csv_parser_malloc) and [csv_parser_free](@ref csv_parser_free) */
 } CSV_PARSER;
@@ -175,7 +140,7 @@ CSV_PARSER_API uint8_t *csv_parser_duplicate_buffer(CSV_PARSER *parser, uint8_t 
 	\param parser Parser where the buffer is to be associated with
 	\param buffer The CSV buffer. The buffer must be null terminated
 	\param length The length of the buffer. The length of the buffer MUST not count the null terminator
-	\return Non zero if the passed CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [CSV_PARSER](@ref CSV_PARSER)::error
+	\return Non zero if the passed CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [CSV_PARSER::error](@ref CSV_PARSER::error)
 */
 CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_buffer(CSV_PARSER *parser, uint8_t *buffer, size_t length);
 
@@ -194,7 +159,7 @@ CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_buffer(CSV_PARSER *parser, uint8_
 CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_duplicated(CSV_PARSER *parser, uint8_t *buffer, size_t length);
 
 
-#ifndef CSV_PARSER_NO_STDIO
+#ifdef CSV_PARSER_STDIO_INCLUDED
 
 /*! \fn CSV_PARSER_Bool csv_parser_load_file(CSV_PARSER *parser, FILE *fp)
 	\brief Loads the CSV buffer for parsing by reading from given FILE *
@@ -205,7 +170,7 @@ CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_duplicated(CSV_PARSER *parser, ui
 
 	\param parser Parser where the buffer is to be associated with
 	\param fp The file handle which is to be read to load the buffer
-	\return Non zero if the read CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [CSV_PARSER](@ref CSV_PARSER)::error
+	\return Non zero if the read CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [CSV_PARSER::error](@ref CSV_PARSER::error)
 */
 CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_file(CSV_PARSER *parser, FILE *fp);
 
@@ -215,7 +180,7 @@ CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_file(CSV_PARSER *parser, FILE *fp
 
 	\param parser Parser where the CSV buffer is to be associated with
 	\param file_path The path to the CSV file
-	\return Non zero if the read CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [CSV_PARSER](@ref CSV_PARSER)::error
+	\return Non zero if the read CSV buffer is valid. If zero, loading CSV buffer failed and error message is stored in [CSV_PARSER::error](@ref CSV_PARSER::error)
 */
 CSV_PARSER_API CSV_PARSER_Bool csv_parser_load(CSV_PARSER *parser, const char *file_path);
 
@@ -231,8 +196,8 @@ CSV_PARSER_API void csv_parser_release(CSV_PARSER *parser);
 
 /*! \fn uint8_t *csv_parser_next(CSV_PARSER *parser, size_t *length)
 	\brief Parses the next element in the CSV buffer. 
-	This procedure is expected to be called in a loop of [CSV_PARSER](@ref CSV_PARSER)::rows and [CSV_PARSER](@ref CSV_PARSER)::columns.
-	The first [CSV_PARSER](@ref CSV_PARSER)::columns values are always the heading of the CSV buffer
+	This procedure is expected to be called in a loop of [CSV_PARSER::lines](@ref CSV_PARSER::lines) and [CSV_PARSER::columns](@ref CSV_PARSER::columns).
+	The first [CSV_PARSER::columns](@ref CSV_PARSER::columns) values are always the heading of the CSV buffer
 
 	\param parser The parser whose next element should be parsed
 	\param length Returns the length of the UTF-8 string returned
@@ -406,7 +371,7 @@ CSV_PARSER_DEFN_API CSV_PARSER_Bool csv_parser_load_duplicated(CSV_PARSER *parse
 	return 0;
 }
 
-#ifndef CSV_PARSER_NO_STDIO
+#ifdef CSV_PARSER_STDIO_INCLUDED
 CSV_PARSER_DEFN_API CSV_PARSER_Bool csv_parser_load_file(CSV_PARSER *parser, FILE *fp) {
 	CSV_PARSER_ASSERT(fp);
 	size_t buffer_length = _csv_parser_get_file_size(fp);
