@@ -30,11 +30,12 @@ var searchData=
   ['csv_5fparser_5fmemcpy_27',['CSV_PARSER_MEMCPY',['../csv__parser_8h.html#a64664cb046b186ca9400fe8e257a6776',1,'csv_parser.h']]],
   ['csv_5fparser_5fnext_28',['csv_parser_next',['../csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa',1,'csv_parser.h']]],
   ['csv_5fparser_5frelease_29',['csv_parser_release',['../csv__parser_8h.html#a5d534a4d85b64342d4aa9318da243505',1,'csv_parser.h']]],
-  ['csv_5fparser_5fstdio_5fincluded_30',['CSV_PARSER_STDIO_INCLUDED',['../csv__parser_8h.html#a59f65f5b062d8ec89534e1a18a01f902',1,'csv_parser.h']]],
-  ['csv_5fparser_5fstring_31',['CSV_PARSER_STRING',['../struct_c_s_v___p_a_r_s_e_r___s_t_r_i_n_g.html',1,'']]],
-  ['csv_5fstring_5fduplicate_32',['CSV_STRING_DUPLICATE',['../csv__deserializer_8h.html#a22b013c0fa848d0213ee3c784ef61681',1,'csv_deserializer.h']]],
-  ['csv_5fstring_5fto_5fdouble_33',['CSV_STRING_TO_DOUBLE',['../csv__deserializer_8h.html#a4f4691aa75bc1ca339f9abae77c5f1df',1,'csv_deserializer.h']]],
-  ['csv_5fstring_5fto_5fint64_34',['CSV_STRING_TO_INT64',['../csv__deserializer_8h.html#aff83114f1ee51b8e98da20dcda2d4a36',1,'csv_deserializer.h']]],
-  ['csv_5fstring_5fto_5fuint64_35',['CSV_STRING_TO_UINT64',['../csv__deserializer_8h.html#a44c1e8a16cff35fc6dff3c9f68f2f48d',1,'csv_deserializer.h']]],
-  ['csvparser_36',['csvParser',['../md__r_e_a_d_m_e.html',1,'']]]
+  ['csv_5fparser_5fskip_5frow_30',['csv_parser_skip_row',['../csv__parser_8h.html#a711412f6f769ee62074517695cce2f00',1,'csv_parser.h']]],
+  ['csv_5fparser_5fstdio_5fincluded_31',['CSV_PARSER_STDIO_INCLUDED',['../csv__parser_8h.html#a59f65f5b062d8ec89534e1a18a01f902',1,'csv_parser.h']]],
+  ['csv_5fparser_5fstring_32',['CSV_PARSER_STRING',['../struct_c_s_v___p_a_r_s_e_r___s_t_r_i_n_g.html',1,'']]],
+  ['csv_5fstring_5fduplicate_33',['CSV_STRING_DUPLICATE',['../csv__deserializer_8h.html#a22b013c0fa848d0213ee3c784ef61681',1,'csv_deserializer.h']]],
+  ['csv_5fstring_5fto_5fdouble_34',['CSV_STRING_TO_DOUBLE',['../csv__deserializer_8h.html#a4f4691aa75bc1ca339f9abae77c5f1df',1,'csv_deserializer.h']]],
+  ['csv_5fstring_5fto_5fint64_35',['CSV_STRING_TO_INT64',['../csv__deserializer_8h.html#aff83114f1ee51b8e98da20dcda2d4a36',1,'csv_deserializer.h']]],
+  ['csv_5fstring_5fto_5fuint64_36',['CSV_STRING_TO_UINT64',['../csv__deserializer_8h.html#a44c1e8a16cff35fc6dff3c9f68f2f48d',1,'csv_deserializer.h']]],
+  ['csvparser_37',['csvParser',['../md__r_e_a_d_m_e.html',1,'']]]
 ];

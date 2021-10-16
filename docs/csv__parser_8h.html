@@ -169,6 +169,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a43d4ddea667509517f5ece853f559efa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="csv__parser_8h.html#a13e6e20ac03cc151394cdd1c4f08e922">CSV_PARSER_API</a> uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa">csv_parser_next</a> (<a class="el" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> *parser, size_t *length)</td></tr>
 <tr class="memdesc:a43d4ddea667509517f5ece853f559efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the next element in the CSV buffer. This procedure is expected to be called in a loop of <a class="el" href="struct_c_s_v___p_a_r_s_e_r.html#af676690c02227588fa8615ad33aeab4c">CSV_PARSER::lines</a> and <a class="el" href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">CSV_PARSER::columns</a>. The first <a class="el" href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">CSV_PARSER::columns</a> values are always the heading of the CSV buffer.  <a href="csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa">More...</a><br /></td></tr>
 <tr class="separator:a43d4ddea667509517f5ece853f559efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a711412f6f769ee62074517695cce2f00"><td class="memItemLeft" align="right" valign="top"><a class="el" href="csv__parser_8h.html#a13e6e20ac03cc151394cdd1c4f08e922">CSV_PARSER_API</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="csv__parser_8h.html#a711412f6f769ee62074517695cce2f00">csv_parser_skip_row</a> (<a class="el" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> *parser)</td></tr>
+<tr class="memdesc:a711412f6f769ee62074517695cce2f00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Skips the single row in the CSV buffer. Useful when it is wanted to skip the first row i.e. the titles.  <a href="csv__parser_8h.html#a711412f6f769ee62074517695cce2f00">More...</a><br /></td></tr>
+<tr class="separator:a711412f6f769ee62074517695cce2f00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A Library for parsing CSV files. csvParser is header only library, to use this, just include this file. </p>
@@ -338,7 +341,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="csv__parser_8h_source.html#l00075">75</a> of file <a class="el" href="csv__parser_8h_source.html">csv_parser.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="csv__parser_8h_source.html#l00079">79</a> of file <a class="el" href="csv__parser_8h_source.html">csv_parser.h</a>.</p>
 
 </div>
 </div>
@@ -724,6 +727,32 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">parser</td><td>The parser whose buffer is to be released </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a711412f6f769ee62074517695cce2f00" name="a711412f6f769ee62074517695cce2f00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a711412f6f769ee62074517695cce2f00">&#9670;&nbsp;</a></span>csv_parser_skip_row()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void csv_parser_skip_row </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> *&#160;</td>
+          <td class="paramname"><em>parser</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Skips the single row in the CSV buffer. Useful when it is wanted to skip the first row i.e. the titles. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parser</td><td>The parser for which the row is to be skipped </td></tr>
   </table>
   </dd>
 </dl>

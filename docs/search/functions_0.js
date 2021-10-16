@@ -18,5 +18,6 @@ var searchData=
   ['csv_5fparser_5fload_5ffile_15',['csv_parser_load_file',['../csv__parser_8h.html#a7861cb89c257813c8e58a9907fd87c3b',1,'csv_parser.h']]],
   ['csv_5fparser_5fmalloc_16',['csv_parser_malloc',['../csv__parser_8h.html#aeba9fe797472bf619a03fb4a71a9ad2e',1,'csv_parser.h']]],
   ['csv_5fparser_5fnext_17',['csv_parser_next',['../csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa',1,'csv_parser.h']]],
-  ['csv_5fparser_5frelease_18',['csv_parser_release',['../csv__parser_8h.html#a5d534a4d85b64342d4aa9318da243505',1,'csv_parser.h']]]
+  ['csv_5fparser_5frelease_18',['csv_parser_release',['../csv__parser_8h.html#a5d534a4d85b64342d4aa9318da243505',1,'csv_parser.h']]],
+  ['csv_5fparser_5fskip_5frow_19',['csv_parser_skip_row',['../csv__parser_8h.html#a711412f6f769ee62074517695cce2f00',1,'csv_parser.h']]]
 ];
