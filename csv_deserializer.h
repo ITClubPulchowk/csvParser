@@ -1,24 +1,15 @@
+/*! \file csv_deserializer.h
+	\brief A Library for deserializing CSV files. csvParser is header only library, to use this, just include this file.
+*/
 
 #ifndef CSV_DESERIALIZER_HPP
 #define CSV_DESERIALIZER_HPP
 
-//
-// [Csv Deserializer]
-//
-
-//
-// [Configuration]
-//
-
 #include "csv_parser.h"
 
-// @Note: Removing strdup
-// To use custom srtdup CSV_STRING_DUPLICATE needs to get redefined before including csv_deserializer.h
-// Doing this string.h will not be included
-#ifdef DOCUMENTATION_NOTE
-#define CSV_STRING_DUPLICATE my_custom_srtdup
-#endif
-
+/*! \def CSV_STRING_DUPLICATE
+	\brief To use custom srtdup CSV_STRING_DUPLICATE needs to get redefined before including csv_deserializer.h. Doing this string.h will not be included
+*/
 #ifndef CSV_STRING_DUPLICATE
 #include <string.h>
 #ifdef _MSC_VER
@@ -28,15 +19,15 @@
 #endif
 #endif
 
-// @Note: Removing strtoll, strtoull and strtod
-// To use custom strtod, strtod and strtod; CSV_STRING_TO_INT64, CSV_STRING_TO_UINT64 and CSV_STRING_TO_DOUBLE needs to get redefined before including csv_deserializer.h
-// Doing this stdlib.h will not be included
-#ifdef DOCUMENTATION_NOTE
-#define CSV_STRING_TO_INT64 my_custom_strtoll
-#define CSV_STRING_TO_UINT64 my_custom_strtoull
-#define CSV_STRING_TO_DOUBLE my_custom_strtod
-#endif
-
+/*! \def CSV_STRING_TO_INT64
+	\brief To use custom strtoll, CSV_STRING_TO_INT64 needs to get redefined before including csv_deserializer.h. Doing this stdlib.h will not be included
+*/
+/*! \def CSV_STRING_TO_UINT64
+	\brief To use custom strtoull, CSV_STRING_TO_UINT64 needs to get redefined before including csv_deserializer.h. Doing this stdlib.h will not be included
+*/
+/*! \def CSV_STRING_TO_DOUBLE
+	\brief To use custom strtod, CSV_STRING_TO_DOUBLE needs to get redefined before including csv_deserializer.h. Doing this stdlib.h will not be included
+*/
 #if !defined(CSV_STRING_TO_INT64) || !defined(CSV_STRING_TO_UINT64) || !defined(CSV_STRING_TO_DOUBLE)
 #include <stdlib.h>
 #define CSV_STRING_TO_INT64 strtoll
@@ -44,35 +35,130 @@
 #define CSV_STRING_TO_DOUBLE strtod
 #endif
 
-//
-// [Declarations]
-//
-
+/*! \struct CSV_PARSER_STRING
+	\brief String representation with length. Useful instead of using strlen multiple times
+*/
 typedef struct CSV_PARSER_STRING
 {
-	uint8_t *data;
-	size_t len;
+	uint8_t *data;	/*!< Pointer to the underlying c string */
+	size_t len;		/*!< Length of the string */
 } CSV_PARSER_STRING;
 
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_length_string(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_string(void *context, uint8_t *value, size_t len, char **out);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_stringdup(void *context, uint8_t *str, size_t len, char **value);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_sint(void *context, uint8_t *value, size_t len, int64_t *out);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_uint(void *context, uint8_t *value, size_t len, uint64_t *out);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_boolean(void *context, uint8_t *str, size_t len, CSV_PARSER_Bool *value);
-CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_real(void *context, uint8_t *str, size_t len, double *value);
+/*! \fn CSV_PARSER_Bool csv_deserialize_length_string(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out)
+	\brief Procedure that is intended as input to [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) which deserializes [CSV_PARSER_STRING](@ref CSV_PARSER_STRING)
 
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized [CSV_PARSER_STRING](@ref CSV_PARSER_STRING)
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_length_string(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
+
+/*! \fn CSV_PARSER_Bool csv_deserialize_string(void *context, uint8_t *value, size_t len, char **out)
+	\brief Procedure that is intended as input to [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) which deserializes C string
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized C string
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_string(void *context, uint8_t *value, size_t len, char **out);
+
+/*! \fn CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out)
+	\brief Same as [csv_deserialize_length_string](@ref csv_deserialize_length_string) but duplicates the string by [CSV_STRING_DUPLICATE](@ref CSV_STRING_DUPLICATE) which must be freed later
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized [CSV_PARSER_STRING](@ref CSV_PARSER_STRING)
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_length_stringdup(void *context, uint8_t *value, size_t len, CSV_PARSER_STRING *out);
+
+/*! \fn csv_deserialize_stringdup(void *context, uint8_t *value, size_t len, char **out)
+	\brief Same as [csv_deserialize_string](@ref csv_deserialize_string) but duplicates the string by [CSV_STRING_DUPLICATE](@ref CSV_STRING_DUPLICATE) which must be freed later
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized C string
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_stringdup(void *context, uint8_t *value, size_t len, char **out);
+
+/*! \fn CSV_PARSER_Bool csv_deserialize_sint(void *context, uint8_t *value, size_t len, int64_t *out)
+	\brief Procedure that is intended as input to [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) which deserializes int64_t
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized int64_t
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_sint(void *context, uint8_t *value, size_t len, int64_t *out);
+
+/*! \fn CSV_PARSER_Bool csv_deserialize_uint(void *context, uint8_t *value, size_t len, uint64_t *out)
+	\brief Procedure that is intended as input to [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) which deserializes uint64_t
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized uint64_t
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_uint(void *context, uint8_t *value, size_t len, uint64_t *out);
+
+/*! \fn CSV_PARSER_Bool csv_deserialize_boolean(void *context, uint8_t *value, size_t len, CSV_PARSER_Bool *out)
+	\brief Procedure that is intended as input to [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) which deserializes CSV_PARSER_Bool
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized CSV_PARSER_Bool
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_boolean(void *context, uint8_t *value, size_t len, CSV_PARSER_Bool *out);
+
+/*! \fn CSV_PARSER_Bool csv_deserialize_real(void *context, uint8_t *value, size_t len, double *out)
+	\brief Procedure that is intended as input to [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) which deserializes double
+
+	\param context The user variable that is passed to the CSV_Deserializer
+	\param value The string which is to be deserialized
+	\param len The length of the string pointed by value
+	\param out The deserialized double
+	\return Non zero value if the deserialization was successful
+*/
+CSV_PARSER_API CSV_PARSER_Bool csv_deserialize_real(void *context, uint8_t *value, size_t len, double *out);
+
+/*! \var typedef CSV_PARSER_Bool(*CSV_Deserializer)(void *, uint8_t *, size_t, void *)
+	\brief A pointer to a procedure that is used in [CSV_DESERIALIZE_DESC](@ref CSV_DESERIALIZE_DESC) for deserializing strings into data required
+*/
 typedef CSV_PARSER_Bool(*CSV_Deserializer)(void *, uint8_t *, size_t, void *);
 
+/*! \struct CSV_DESERIALIZE_DESC
+	\brief String representation with length. Useful instead of using strlen multiple times
+*/
 typedef struct CSV_DESERIALIZE_DESC
 {
-	CSV_Deserializer *deserializer;
-	size_t *offset; // provide offset of 0th member and so-on
-	size_t				length;  // Total members of the struct 
+	CSV_Deserializer *	deserializer;	/*!< Pointer to the procedures of type [CSV_Deserializer](@ref CSV_Deserializer) that deserializes the input string as required */
+	size_t *			offset;			/*!< Provide offset of 0th member, 1st and so-on */
+	size_t				length;			/*!< Count of the members of the array deserializer and offset */
 } CSV_DESERIALIZE_DESC;
 
-size_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records);
+/*! \fn size_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records)
+	\brief Deserializes the required number of records from the CSV buffer and places in the input buffer
+
+	\param context The user variable that is passed to the CSV_Deserializer from desc
+	\param ptr_to_struct The buffer where the data gets placed
+	\param desc The layout of the buffer. The desc->length MUST be equal to parser->columns
+	\param stride The value added to ptr_to_struct to get to the next place where the next data is to be placed
+	\param parser The parser from which the CSV is to be deserialized
+	\param no_of_records Total number of records to deserialize
+	\return Number of records actually deserialized
+*/
+CSV_PARSER_API size_t csv_deserialize(void *context, void *ptr_to_struct, CSV_DESERIALIZE_DESC *desc, size_t stride, CSV_PARSER *parser, size_t no_of_records);
 
 //
 // [IMPLEMENTATION]
