@@ -35,6 +35,14 @@
 #define CSV_STRING_TO_DOUBLE strtod
 #endif
 
+//
+// [Declarations]
+//
+
+#if !defined(__cplusplus)
+extern "C" {
+#endif
+
 /*! \struct CSV_PARSER_STRING
 	\brief String representation with length. Useful instead of using strlen multiple times
 */
@@ -328,5 +336,9 @@ CSV_PARSER_DEFN_API size_t csv_deserialize(void *context, void *ptr_to_struct, C
 }
 
 #endif // CSV_DESERIALIZER_IMPLEMENTATION
+
+#if !defined(__cplusplus)
+}
+#endif
 
 #endif
