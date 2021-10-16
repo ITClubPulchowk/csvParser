@@ -128,9 +128,9 @@ int main()
 ```
 
 
-# Examples to code
-1. Using serial parsing by printing in table
-2. Using serializer to parse structs with not complex types
-3. Using custom parser functions to parse complex types such as array / structs
-4. Examples of replacing std library function, only allocation functions
-5. Examples by loading file and reading by ourself instead of using the function that automatically loads the file and parses it
+# Examples
+1. Parsing CSV file serially: `examples/example0_parsing_csv.c`
+2. Serializing CSV file to structs: `examples/example1_serializing_csv.c`
+3. Serializing CSV file to complex structs: `examples/example2_serializing_csv.c`
+4. Using custom allocators: `examples/example3_custom_allocators.c`
+5. Parsing from buffer: `examples/example4_parsing_buffers.c`
