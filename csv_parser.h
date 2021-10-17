@@ -72,7 +72,7 @@
 // [Declarations]
 //
 
-#if !defined(__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -443,7 +443,7 @@ CSV_PARSER_DEFN_API void csv_parser_skip_row(CSV_PARSER *parser) {
 
 #endif // CSV_PARSER_IMPLEMENTATION
 
-#if !defined(__cplusplus)
+#if defined(__cplusplus)
 }
 #endif
 
