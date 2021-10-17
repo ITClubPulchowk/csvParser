@@ -72,6 +72,10 @@
 // [Declarations]
 //
 
+#if !defined(__cplusplus)
+extern "C" {
+#endif
+
 typedef int32_t CSV_PARSER_Bool;
 
 /*! \struct CSV_PARSER
@@ -204,6 +208,13 @@ CSV_PARSER_API void csv_parser_release(CSV_PARSER *parser);
 	\return The UTF-8 string of the next element
 */
 CSV_PARSER_API uint8_t *csv_parser_next(CSV_PARSER *parser, size_t *length);
+
+/*! \fn void csv_parser_skip_row(CSV_PARSER *parser)
+	\brief Skips the single row in the CSV buffer. Useful when it is wanted to skip the first row i.e. the titles
+
+	\param parser The parser for which the row is to be skipped
+*/
+CSV_PARSER_API void csv_parser_skip_row(CSV_PARSER *parser);
 
 //
 // [IMPLEMENTATION]
@@ -423,6 +434,17 @@ CSV_PARSER_DEFN_API uint8_t *csv_parser_next(CSV_PARSER *parser, size_t *length)
 	return next_token;
 }
 
+CSV_PARSER_DEFN_API void csv_parser_skip_row(CSV_PARSER *parser) {
+	size_t length = 0;
+	for (size_t col = 0; col < parser->columns; ++col) {
+		csv_parser_next(&parser, &length);
+	}
+}
+
 #endif // CSV_PARSER_IMPLEMENTATION
+
+#if !defined(__cplusplus)
+}
+#endif
 
 #endif
