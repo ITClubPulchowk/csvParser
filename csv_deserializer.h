@@ -337,7 +337,7 @@ CSV_PARSER_DEFN_API size_t csv_deserialize(void *context, void *ptr_to_struct, C
 
 #endif // CSV_DESERIALIZER_IMPLEMENTATION
 
-#if !defined(__cplusplus)
+#if defined(__cplusplus)
 }
 #endif
 
