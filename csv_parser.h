@@ -437,7 +437,7 @@ CSV_PARSER_DEFN_API uint8_t *csv_parser_next(CSV_PARSER *parser, size_t *length)
 CSV_PARSER_DEFN_API void csv_parser_skip_row(CSV_PARSER *parser) {
 	size_t length = 0;
 	for (size_t col = 0; col < parser->columns; ++col) {
-		csv_parser_next(&parser, &length);
+		csv_parser_next(parser, &length);
 	}
 }
 
