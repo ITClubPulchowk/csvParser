@@ -39,7 +39,7 @@
 // [Declarations]
 //
 
-#if !defined(__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
