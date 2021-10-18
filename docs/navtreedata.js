@@ -25,11 +25,11 @@
 var NAVTREE =
 [
   [ "csvParser", "index.html", [
-    [ "csvParser", "md__r_e_a_d_m_e.html", [
-      [ "Documentation", "md__r_e_a_d_m_e.html#autotoc_md1", null ],
-      [ "csv_parser.h", "md__r_e_a_d_m_e.html#autotoc_md2", null ],
-      [ "csv_deserializer.h", "md__r_e_a_d_m_e.html#autotoc_md3", null ],
-      [ "Examples", "md__r_e_a_d_m_e.html#autotoc_md4", null ]
+    [ "csvParser", "md__c___dev_csv_parser__r_e_a_d_m_e.html", [
+      [ "Documentation", "md__c___dev_csv_parser__r_e_a_d_m_e.html#autotoc_md1", null ],
+      [ "csv_parser.h", "md__c___dev_csv_parser__r_e_a_d_m_e.html#autotoc_md2", null ],
+      [ "csv_deserializer.h", "md__c___dev_csv_parser__r_e_a_d_m_e.html#autotoc_md3", null ],
+      [ "Examples", "md__c___dev_csv_parser__r_e_a_d_m_e.html#autotoc_md4", null ]
     ] ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],

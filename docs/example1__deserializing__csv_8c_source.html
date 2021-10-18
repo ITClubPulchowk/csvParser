@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>csvParser: C:/Dev/csvParser/examples/example1_serializing_csv.c Source File</title>
+<title>csvParser: C:/Dev/csvParser/examples/example1_deserializing_csv.c Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -63,7 +63,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('example1__serializing__csv_8c_source.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('example1__deserializing__csv_8c_source.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -82,7 +82,7 @@ $(document).ready(function(){initNavTree('example1__serializing__csv_8c_source.h
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">example1_serializing_csv.c</div></div>
+  <div class="headertitle"><div class="title">example1_deserializing_csv.c</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#define CSV_PARSER_IMPLEMENTATION</span></div>
@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('example1__serializing__csv_8c_source.h
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keywordtype">void</span> get_row_in_array(<a class="code hl_struct" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> csv,<span class="keywordtype">int</span> row,<span class="keywordtype">char</span> **row_array)</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>{</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordtype">int</span> len=0,letter_count=0;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordtype">size_t</span> len=0,letter_count=0;</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; row*csv.<a class="code hl_variable" href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">columns</a>; i++)</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    {</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <a class="code hl_function" href="csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa">csv_parser_next</a>(&amp;csv,&amp;len);</div>
@@ -100,12 +100,12 @@ $(document).ready(function(){initNavTree('example1__serializing__csv_8c_source.h
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    }</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; csv.<a class="code hl_variable" href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">columns</a>; i++)</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    {</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        *row_array[i]=csv_prser_next(&amp;csv,&amp;len);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        row_array[i]=<a class="code hl_function" href="csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa">csv_parser_next</a>(&amp;csv,&amp;len);</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    }</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">void</span> get_col_in_array(<a class="code hl_struct" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> csv, <span class="keywordtype">int</span> col, <span class="keywordtype">char</span> **col_array)</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">int</span> len = 0;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">size_t</span> len = 0;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; csv.<a class="code hl_variable" href="struct_c_s_v___p_a_r_s_e_r.html#af676690c02227588fa8615ad33aeab4c">lines</a>; j++)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; col; i++)</div>
@@ -151,7 +151,7 @@ $(document).ready(function(){initNavTree('example1__serializing__csv_8c_source.h
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d28a4824dc47e487b107a5db32ef43c4.html">examples</a></li><li class="navelem"><b>example1_serializing_csv.c</b></li>
+    <li class="navelem"><a class="el" href="dir_d28a4824dc47e487b107a5db32ef43c4.html">examples</a></li><li class="navelem"><b>example1_deserializing_csv.c</b></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.2 </li>
   </ul>
 </div>

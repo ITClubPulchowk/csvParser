@@ -1,0 +1,4 @@
+interval_start_timestamp,platform,participators
+2021-10-01T00:00:00+00:00,'Desktop Only',63
+2021-10-01T00:00:00+00:00,'Desktop and Mobile',200
+2021-10-01T00:00:00+00:00,'Mobile Only',63

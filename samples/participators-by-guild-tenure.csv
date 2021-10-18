@@ -1,0 +1,5 @@
+interval_start_timestamp,tenure,participators
+2021-10-01T00:00:00+00:00,'1 - 6 months',164
+2021-10-01T00:00:00+00:00,'1 year+',128
+2021-10-01T00:00:00+00:00,'6 months - 1 year',31
+2021-10-01T00:00:00+00:00,'< 1 month',3

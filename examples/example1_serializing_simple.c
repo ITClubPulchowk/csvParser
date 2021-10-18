@@ -1,3 +1,4 @@
+
 #define CSV_PARSER_IMPLEMENTATION
 #include "../csv_parser.h"
 #define CSV_DESERIALIZER_IMPLEMENTATION
@@ -52,8 +53,12 @@ int main()
         strcat(first_row,token);
 	}
     csv_deserialize(NULL,data1,&desc,sizeof(row_data),&csv,csv.lines);
+<<<<<<< HEAD:examples/example1_serializing_simple.c
     printf("%s\n",first_row);
     for (int i = 0; i < csv.lines; i++)
+=======
+    for (int i = 0; i < csv.lines-1; i++)
+>>>>>>> 7b4c77f54ed8b55387af12842e6bd670d8783402:examples/example2_deserializing_csv.c
     {
         printf("%10s",data1[i].name);
         printf("%10d",data1[i].compilation);
