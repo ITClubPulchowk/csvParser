@@ -36,12 +36,12 @@ int main()
     CSV_PARSER_Bool *col_data;
     csv_parser_init(&csv, NULL);
     csv_parser_load(&csv, "samples/MOCK_DATA0.csv");
-    boolean_data=malloc(sizeof(char ** ) * csv.lines);
+    boolean_data=csv_parser_malloc(sizeof(char ** ) * csv.lines,NULL);
     for (int i = 0; i < csv.lines; i++)
     {
-        boolean_data[i]=malloc(sizeof(char)*20);
+        boolean_data[i]=csv_parser_malloc(sizeof(char)*20);
     }
-    col_data=malloc(sizeof(CSV_PARSER_Bool)*csv.lines);
+    col_data=csv_parser_malloc(sizeof(CSV_PARSER_Bool)*csv.lines);
     get_col_in_array(csv, 2, boolean_data);
     for (int i = 1; i < csv.lines; i++)
     {
@@ -49,6 +49,8 @@ int main()
         col_data[i] = !col_data[i];
         printf("%s:%d\n", boolean_data[i],col_data[i]);
     }
-    free(col_data);
+    csv_parser_free(boolean_data,NULL);
+    csv_parser_free(col_data,NULL);
+    csv_parser_release(&csv);
     return 0;
 }
