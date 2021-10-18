@@ -12,25 +12,27 @@ csvParser is header only library, to use this, just include `csv_parser.h`. Exam
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-	if (argc != 2) {
-		fprintf(stderr, "Invalid. USAGE: %s <csv_file>\n", argv[0]);
-		return 1;
-	}
+    if (argc != 2) {
+        fprintf(stderr, "Invalid. USAGE: %s <csv_file>\n", argv[0]);
+        return 1;
+    }
 
-	csv_parser parser;
-	csv_parser_init(&parser, NULL);
-	if (csv_parser_load(&parser, argv[1])) {
-		for (int row = 0; row < parser.lines; ++row) {
-			for (int col = 0; col < parser.columns; ++col) {
-				char *value = csv_parser_next(&parser);
-				printf("%s ", value);
-			}
-			printf("\n");
-		}
+    size_t len;
 
-		csv_parser_release(&parser);
-	}
-	return 0;
+    CSV_PARSER parser;
+    csv_parser_init(&parser, NULL);
+    if (csv_parser_load(&parser, argv[1])) {
+        for (int row = 0; row < parser.lines; ++row) {
+            for (int col = 0; col < parser.columns; ++col) {
+                char *value = csv_parser_next(&parser, &len);
+                printf("%s ", value);
+            }
+            printf("\n");
+        }
+
+        csv_parser_release(&parser);
+    }
+    return 0;
 }
 ```
 
@@ -110,11 +112,13 @@ int main()
 		if (number_of_lines_to_parse > 100)
 			number_of_lines_to_parse = 100;
 
-		for (int col = 0; col < parser.columns; ++col) {
+		csv_parser_skip_row(&parser);
+		// This is equivalent to following:
+		/* for (int col = 0; col < parser.columns; ++col) {
 			size_t length = 0;
-			char *value = csv_parser_next(&parser, &length);
-			// printf("%-12s ", value);
+			csv_parser_next(&parser, &length);
 		}
+		*/
 		printf("\n");
 
 		csv_deserialize(NULL, (void *)&test, &desc, sizeof(struct info), &parser, number_of_lines_to_parse);
@@ -133,7 +137,7 @@ int main()
 
 # Examples
 1. Parsing CSV file serially: `examples/example0_parsing_csv.c`
-2. Serializing CSV file to structs: `examples/example1_serializing_csv.c`
-3. Serializing CSV file to complex structs: `examples/example2_serializing_csv.c`
+2. Deserializing CSV file to structs: `examples/example1_deserializing_csv.c`
+3. Deserializing CSV file to complex structs: `examples/example2_deserializing_csv.c`
 4. Using custom allocators: `examples/example3_custom_allocators.c`
 5. Parsing from buffer: `examples/example4_parsing_buffers.c`

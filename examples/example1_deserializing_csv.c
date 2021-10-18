@@ -5,7 +5,7 @@
 
 void get_row_in_array(CSV_PARSER csv,int row,char **row_array)
 {
-    int len=0,letter_count=0;
+    size_t len=0,letter_count=0;
     for (int i = 0; i < row*csv.columns; i++)
     {
         csv_parser_next(&csv,&len);
@@ -13,12 +13,12 @@ void get_row_in_array(CSV_PARSER csv,int row,char **row_array)
     }
     for (int i = 0; i < csv.columns; i++)
     {
-        *row_array[i]=csv_prser_next(&csv,&len);
+        row_array[i]=csv_parser_next(&csv,&len);
     }
 }
 void get_col_in_array(CSV_PARSER csv, int col, char **col_array)
 {
-    int len = 0;
+    size_t len = 0;
     for (int j = 0; j < csv.lines; j++)
     {
         for (int i = 0; i < col; i++)

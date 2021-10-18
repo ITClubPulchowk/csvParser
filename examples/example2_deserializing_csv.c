@@ -1,3 +1,4 @@
+
 #define CSV_PARSER_IMPLEMENTATION
 #include "../csv_parser.h"
 #define CSV_DESERIALIZER_IMPLEMENTATION
@@ -45,7 +46,7 @@ int main()
     data1=malloc(sizeof(row_data)*csv.lines);
     csv_parser_skip_row(&csv);
     csv_deserialize(NULL,data1,&desc,sizeof(row_data),&csv,csv.lines);
-    for (int i = 0; i < csv.lines; i++)
+    for (int i = 0; i < csv.lines-1; i++)
     {
         printf("%s\n",data1[i].name);
     }

@@ -1,0 +1,26 @@
+@version 1.0.0
+
+[example0]
+Sources: example0_parsing_csv.c;
+Build: example0_parsing_csv;
+IncludeDirectories: ../;
+
+[example1]
+Sources: example1_deserializing_csv.c;
+Build: example1_serializing_csv;
+IncludeDirectories: ../;
+
+[example2]
+Sources: example2_deserializing_csv.c;
+Build: example2_serializing_csv;
+IncludeDirectories: ../;
+
+[example3]
+Sources: example3_custom_allocators.c;
+Build: example3_custom_allocators;
+IncludeDirectories: ../;
+
+[example4]
+Sources: example4_parsing_buffers.c;
+Build: example4_parsing_buffers;
+IncludeDirectories: ../;
