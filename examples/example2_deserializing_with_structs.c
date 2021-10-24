@@ -47,10 +47,10 @@ int main()
 {
     CSV_DESERIALIZE_DESC desc;
     CSV_Deserializer funcs[] = {
-        csv_deserialize_sint,
-        csv_deserialize_string,
-        csv_deserialize_dob,
-        csv_deserialize_time
+        (CSV_Deserializer)csv_deserialize_sint,
+        (CSV_Deserializer)csv_deserialize_string,
+        (CSV_Deserializer)csv_deserialize_dob,
+        (CSV_Deserializer)csv_deserialize_time
     };
     size_t offsets[] = {
         offsetof(row_data,id),
@@ -68,7 +68,7 @@ int main()
     data1=malloc(sizeof(row_data)*csv.lines);
     csv_parser_skip_row(&csv);
     csv_deserialize(NULL,data1,&desc,sizeof(row_data),&csv,csv.lines);
-    for (int i = 0; i < csv.lines; i++)
+    for (int i = 0; i < csv.lines-1; i++)
     {
         printf("%d\t",data1[i].id);
         printf("%s\t",data1[i].first_name);

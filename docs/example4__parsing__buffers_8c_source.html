@@ -85,7 +85,49 @@ $(document).ready(function(){initNavTree('example4__parsing__buffers_8c_source.h
   <div class="headertitle"><div class="title">example4_parsing_buffers.c</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"></div><!-- fragment --></div><!-- contents -->
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#define CSV_PARSER_IMPLEMENTATION</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;../csv_parser.h&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#define CSV_DESERIALIZER_IMPLEMENTATION</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;../csv_deserializer.h&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keywordtype">void</span> display_csv(<a class="code hl_struct" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> csv)</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keywordtype">size_t</span> len=0;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; csv.<a class="code hl_variable" href="struct_c_s_v___p_a_r_s_e_r.html#af676690c02227588fa8615ad33aeab4c">lines</a>*csv.<a class="code hl_variable" href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">columns</a>; i++)</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <span class="keywordflow">if</span>(i%csv.<a class="code hl_variable" href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">columns</a>==0)</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>            printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        printf(<span class="stringliteral">&quot;%20s&quot;</span>,<a class="code hl_function" href="csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa">csv_parser_next</a>(&amp;csv,&amp;len));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    }</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    printf(<span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">int</span> main()</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordtype">char</span> *buffer;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_struct" href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a> csv;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    FILE *fp=NULL;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">size_t</span> f_size;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="csv__parser_8h.html#a863cb20e67643ea5dde0840b6e9ab3e1">csv_parser_init</a>(&amp;csv,NULL);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    fp=fopen(<span class="stringliteral">&quot;samples/MOCK_DATA3.csv&quot;</span>,<span class="stringliteral">&quot;rb&quot;</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    fseek(fp, 0L, SEEK_END);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>     f_size = ftell(fp);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    fseek(fp, 0L, SEEK_SET);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    buffer=<a class="code hl_function" href="csv__parser_8h.html#aeba9fe797472bf619a03fb4a71a9ad2e">csv_parser_malloc</a>((f_size+1)*<span class="keyword">sizeof</span>(*buffer),NULL);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    fread(buffer,f_size,1,fp);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    buffer[f_size]=0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_function" href="csv__parser_8h.html#abc0efd6648f30a31e13c3575d2cb6315">csv_parser_load_buffer</a>(&amp;csv,buffer,f_size);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    display_csv(csv);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_function" href="csv__parser_8h.html#a24f74c3d9390c781c53ca1d7156ae9d9">csv_parser_free</a>(buffer,NULL);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="ttc" id="acsv__parser_8h_html_a24f74c3d9390c781c53ca1d7156ae9d9"><div class="ttname"><a href="csv__parser_8h.html#a24f74c3d9390c781c53ca1d7156ae9d9">csv_parser_free</a></div><div class="ttdeci">CSV_PARSER_API void csv_parser_free(void *ptr, void *context)</div><div class="ttdoc">CSV procedure to free memory allocated using csv_parser_malloc. By default uses free from standard C ...</div></div>
+<div class="ttc" id="acsv__parser_8h_html_a43d4ddea667509517f5ece853f559efa"><div class="ttname"><a href="csv__parser_8h.html#a43d4ddea667509517f5ece853f559efa">csv_parser_next</a></div><div class="ttdeci">CSV_PARSER_API uint8_t * csv_parser_next(CSV_PARSER *parser, size_t *length)</div><div class="ttdoc">Parses the next element in the CSV buffer. This procedure is expected to be called in a loop of CSV_P...</div></div>
+<div class="ttc" id="acsv__parser_8h_html_a863cb20e67643ea5dde0840b6e9ab3e1"><div class="ttname"><a href="csv__parser_8h.html#a863cb20e67643ea5dde0840b6e9ab3e1">csv_parser_init</a></div><div class="ttdeci">CSV_PARSER_API void csv_parser_init(CSV_PARSER *parser, void *allocator_context)</div><div class="ttdoc">Initializes CSV_PARSER with the allocator context Allocator context is the user data which is passed ...</div></div>
+<div class="ttc" id="acsv__parser_8h_html_abc0efd6648f30a31e13c3575d2cb6315"><div class="ttname"><a href="csv__parser_8h.html#abc0efd6648f30a31e13c3575d2cb6315">csv_parser_load_buffer</a></div><div class="ttdeci">CSV_PARSER_API CSV_PARSER_Bool csv_parser_load_buffer(CSV_PARSER *parser, uint8_t *buffer, size_t length)</div><div class="ttdoc">Loads the CSV buffer for parsing. The buffer gets modified by this function. If the given buffer shou...</div></div>
+<div class="ttc" id="acsv__parser_8h_html_aeba9fe797472bf619a03fb4a71a9ad2e"><div class="ttname"><a href="csv__parser_8h.html#aeba9fe797472bf619a03fb4a71a9ad2e">csv_parser_malloc</a></div><div class="ttdeci">CSV_PARSER_API void * csv_parser_malloc(size_t size, void *context)</div><div class="ttdoc">CSV procedure to allocate memory. By default uses malloc from standard C library. To use custom alloc...</div></div>
+<div class="ttc" id="astruct_c_s_v___p_a_r_s_e_r_html"><div class="ttname"><a href="struct_c_s_v___p_a_r_s_e_r.html">CSV_PARSER</a></div><div class="ttdoc">CSV_PARSER is passed to Buffer Loading Procedures and gets filled by these functions</div><div class="ttdef"><b>Definition:</b> <a href="csv__parser_8h_source.html#l00084">csv_parser.h:84</a></div></div>
+<div class="ttc" id="astruct_c_s_v___p_a_r_s_e_r_html_a8f286185a216a03cae5eb89c39f19349"><div class="ttname"><a href="struct_c_s_v___p_a_r_s_e_r.html#a8f286185a216a03cae5eb89c39f19349">CSV_PARSER::columns</a></div><div class="ttdeci">size_t columns</div><div class="ttdef"><b>Definition:</b> <a href="csv__parser_8h_source.html#l00086">csv_parser.h:86</a></div></div>
+<div class="ttc" id="astruct_c_s_v___p_a_r_s_e_r_html_af676690c02227588fa8615ad33aeab4c"><div class="ttname"><a href="struct_c_s_v___p_a_r_s_e_r.html#af676690c02227588fa8615ad33aeab4c">CSV_PARSER::lines</a></div><div class="ttdeci">size_t lines</div><div class="ttdef"><b>Definition:</b> <a href="csv__parser_8h_source.html#l00087">csv_parser.h:87</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

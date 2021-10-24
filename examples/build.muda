@@ -6,13 +6,13 @@ Build: example0_parsing_csv;
 IncludeDirectories: ../;
 
 [example1]
-Sources: example1_deserializing_csv.c;
-Build: example1_serializing_csv;
+Sources: example1_deserializing_simple.c;
+Build: example1_deserializing_simple;
 IncludeDirectories: ../;
 
 [example2]
-Sources: example2_deserializing_csv.c;
-Build: example2_serializing_csv;
+Sources: example2_deserializing_with_structs.c;
+Build: example2_deserializing_with_structs;
 IncludeDirectories: ../;
 
 [example3]

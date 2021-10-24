@@ -137,7 +137,7 @@ int main()
 
 # Examples
 1. Parsing CSV file serially: `examples/example0_parsing_csv.c`
-2. Deserializing CSV file to structs: `examples/example1_deserializing_csv.c`
-3. Deserializing CSV file to complex structs: `examples/example2_deserializing_csv.c`
+2. Deserializing CSV file to structs: `examples/example1_deserializing_simple.c`
+3. Deserializing CSV file to complex structs: `examples/example2_deserializing_with_structs.c`
 4. Using custom allocators: `examples/example3_custom_allocators.c`
 5. Parsing from buffer: `examples/example4_parsing_buffers.c`

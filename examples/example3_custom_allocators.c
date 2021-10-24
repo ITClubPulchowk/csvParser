@@ -39,9 +39,9 @@ int main()
     boolean_data=csv_parser_malloc(sizeof(char ** ) * csv.lines,NULL);
     for (int i = 0; i < csv.lines; i++)
     {
-        boolean_data[i]=csv_parser_malloc(sizeof(char)*20);
+        boolean_data[i]=csv_parser_malloc(sizeof(char)*20,NULL);
     }
-    col_data=csv_parser_malloc(sizeof(CSV_PARSER_Bool)*csv.lines);
+    col_data=csv_parser_malloc(sizeof(CSV_PARSER_Bool)*csv.lines,NULL);
     get_col_in_array(csv, 2, boolean_data);
     for (int i = 1; i < csv.lines; i++)
     {

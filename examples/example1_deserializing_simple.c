@@ -38,7 +38,7 @@ int main()
     };
     CSV_PARSER csv;
     row_data *data1;
-    int len=0;
+    size_t len=0;
     char *first_row=malloc(sizeof(csv.buffer)/4);
     char *token=malloc(sizeof(char)*20);
     strcpy(first_row,"");
