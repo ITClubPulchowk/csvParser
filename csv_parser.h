@@ -241,6 +241,7 @@ static int64_t _csv_parser_count_columns(CSV_PARSER *parser) {
 	while (parser->position < end && *parser->position != '\n') {
 		switch (*parser->position) {
 		case '"': // field inside double quotes
+			parser->position += 1;
 			while (parser->position < end && *parser->position != '"') {
 				if (*parser->position == '\n' || *parser->position == '\r') {
 					parser->error.reason = (char *)"Could not find matching \".";
@@ -256,6 +257,7 @@ static int64_t _csv_parser_count_columns(CSV_PARSER *parser) {
 			}
 			break;
 		case '\'': // field inside single quotes
+			parser->position += 1;
 			while (parser->position < end && *parser->position != '\'') {
 				if (*parser->position == '\n' || *parser->position == '\r') {
 					parser->error.reason = (char *)"Could not find matching '.";
